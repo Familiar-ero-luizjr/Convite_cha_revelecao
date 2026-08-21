@@ -9,10 +9,10 @@
 </head>
 <body>
   <main class="app" aria-live="polite">
-    <section class="screen active" id="screen-0" aria-label="Capa do convite"><div class="art" id="coverArt"></div><button class="hotspot open-letter" id="openLetter" aria-label="Abrir convite"></button><i class="pulse" aria-hidden="true"></i><span class="hint">Toque na carta 💌</span></section>
-    <section class="screen" id="screen-1" aria-label="Detalhes do convite"><div class="art" id="detailsArt"></div><button class="hotspot confirm" id="confirmBtn" aria-label="Confirmar presença"></button><button class="hotspot location" id="locationBtn" aria-label="Abrir localização da festa"></button><button class="hotspot gifts" id="giftsBtn" aria-label="Abrir sugestões de presentes"></button></section>
-    <section class="screen" id="screen-2" aria-label="Sugestões de presentes"><div class="art" id="giftsArt"></div><button class="hotspot open-list" id="listBtn" aria-label="Abrir lista de presentes"></button></section>
-    <nav class="nav" aria-label="Navegação do convite"><button id="backBtn" type="button">← Voltar</button><button id="nextBtn" type="button">Próximo →</button></nav>
+    <section class="screen active" id="screen-0" aria-label="Capa do convite"><div class="art"><img src="page_1.jpeg" alt="" /></div><button class="hotspot open-letter" id="openLetter" aria-label="Abrir convite"></button><i class="pulse" aria-hidden="true"></i><span class="hint" id="openHint"></span></section>
+    <section class="screen" id="screen-1" aria-label="Detalhes do convite"><div class="art"><img src="page_2.jpeg" alt="" /><div class="editable-names" aria-label="Possíveis nomes do bebê"><strong id="girlName"></strong><span id="orText"></span><strong id="boyName"></strong></div><strong class="event-data event-date" id="eventDate"></strong><strong class="event-data event-time" id="eventTime"></strong></div><button class="hotspot confirm" id="confirmBtn" aria-label="Confirmar presença"></button><button class="hotspot location" id="locationBtn" aria-label="Abrir localização da festa"></button><button class="hotspot gifts" id="giftsBtn" aria-label="Abrir sugestões de presentes"></button></section>
+    <section class="screen" id="screen-2" aria-label="Sugestões de presentes"><div class="art"><img src="page_3.jpeg" alt="" /></div><button class="hotspot open-list" id="listBtn" aria-label="Abrir lista de presentes"></button></section>
+    <nav class="nav" aria-label="Navegação do convite"><button id="backBtn" type="button"></button><button id="nextBtn" type="button"></button></nav>
     <div class="progress" aria-hidden="true"><i class="dot active"></i><i class="dot"></i><i class="dot"></i></div>
   </main>
   <script src="convite-data.js"></script>
