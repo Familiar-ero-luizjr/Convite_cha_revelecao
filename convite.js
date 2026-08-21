@@ -13,8 +13,8 @@
   document.getElementById('boyName').textContent = data.menino;
   document.getElementById('orText').textContent = data.textoOu || 'ou';
   document.getElementById('openHint').textContent = data.textoAbrir || 'Toque na carta 💌';
-  document.getElementById('eventDate').textContent = data.data;
-  document.getElementById('eventTime').textContent = data.horario;
+  document.getElementById('eventDate').textContent = String(data.data).replace(' ', '\n');
+  document.getElementById('eventTime').textContent = String(data.horario).replace(/\s+(HORAS?)$/i, '\n$1');
   back.textContent = data.textoVoltar || '← Voltar';
 
   function updateNavigation() {
