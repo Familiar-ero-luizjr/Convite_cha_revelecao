@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Convite interativo para chá revelação" />
+  <title>Convite Chá Revelação</title>
+  <link rel="stylesheet" href="convite.css" />
+</head>
+<body>
+  <main class="app" aria-live="polite">
+    <section class="screen active" id="screen-0" aria-label="Capa do convite"><div class="art" id="coverArt"></div><button class="hotspot open-letter" id="openLetter" aria-label="Abrir convite"></button><i class="pulse" aria-hidden="true"></i><span class="hint">Toque na carta 💌</span></section>
+    <section class="screen" id="screen-1" aria-label="Detalhes do convite"><div class="art" id="detailsArt"></div><button class="hotspot confirm" id="confirmBtn" aria-label="Confirmar presença"></button><button class="hotspot location" id="locationBtn" aria-label="Abrir localização da festa"></button><button class="hotspot gifts" id="giftsBtn" aria-label="Abrir sugestões de presentes"></button></section>
+    <section class="screen" id="screen-2" aria-label="Sugestões de presentes"><div class="art" id="giftsArt"></div><button class="hotspot open-list" id="listBtn" aria-label="Abrir lista de presentes"></button></section>
+    <nav class="nav" aria-label="Navegação do convite"><button id="backBtn" type="button">← Voltar</button><button id="nextBtn" type="button">Próximo →</button></nav>
+    <div class="progress" aria-hidden="true"><i class="dot active"></i><i class="dot"></i><i class="dot"></i></div>
+  </main>
+  <script src="convite-data.js"></script>
+  <script src="convite.js"></script>
+</body>
+</html>
