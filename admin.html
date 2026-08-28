@@ -12,9 +12,9 @@
     <section class="gate card" id="loginGate">
       <p class="eyebrow">Chá Revelação</p>
       <h1>Painel administrativo</h1>
-      <p class="muted">Digite a senha simples configurada em <code>app-config.js</code>.</p>
+      <p class="muted">Use a mesma <code>ADMIN_KEY</code> configurada como Secret no Cloudflare Worker.</p>
       <form id="loginForm" class="stack">
-        <label>Senha<input id="adminPassword" type="password" autocomplete="current-password" required /></label>
+        <label>Senha administrativa<input id="adminPassword" type="password" autocomplete="current-password" required /></label>
         <button class="primary" type="submit">Entrar</button>
         <p class="message error" id="loginError" role="alert"></p>
       </form>
@@ -36,7 +36,7 @@
       <section class="card mode-card">
         <div>
           <h2>Fonte dos dados</h2>
-          <p class="muted">Você pode alternar entre os dois modos sem mudar o restante do convite.</p>
+          <p class="muted">Mock grava só neste navegador. Banco grava no Firestore e aparece para todos.</p>
         </div>
         <label class="mode-select">
           Modo ativo
@@ -46,6 +46,17 @@
           </select>
         </label>
         <div class="notice" id="modeNotice"></div>
+      </section>
+
+      <section class="card api-card">
+        <div>
+          <h2>Imagens dos presentes</h2>
+          <p class="muted">O Cloudflare Worker lista e envia imagens para <code>assets/presentes/</code> por commit no GitHub.</p>
+        </div>
+        <div class="api-actions">
+          <button class="button secondary" id="refreshImagesBtn" type="button">Atualizar imagens</button>
+          <span class="message" id="imagesMessage" role="status"></span>
+        </div>
       </section>
 
       <form id="inviteForm">
@@ -70,18 +81,26 @@
         </section>
 
         <section class="card">
-          <h2>Sugestões de presentes sobre a terceira imagem</h2>
-          <p class="muted section-copy">Esses textos ficam por cima de <code>assets/convite/page_3.jpeg</code>. Enquanto a arte antiga ainda tiver texto desenhado nela, você pode manter estes campos vazios.</p>
-          <div class="grid">
-            <label>Título<input name="presentesTitulo" type="text" placeholder="Sugestões de presentes" /></label>
-            <label>Lista de presentes<textarea name="presentesLista" rows="7" placeholder="Uma sugestão por linha"></textarea></label>
-            <label>Observação<textarea name="presentesObservacao" rows="3" placeholder="Ex.: Fraldas tamanho M ou G"></textarea></label>
+          <div class="section-heading-row">
+            <div>
+              <h2>Sugestões de presentes</h2>
+              <p class="muted section-copy">Itens dinâmicos sobre a terceira imagem. Cada presente pode ficar sem imagem, usar uma imagem do repositório, uma URL externa ou enviar uma nova imagem ao GitHub.</p>
+            </div>
+            <button class="button secondary" id="addGiftBtn" type="button">+ Adicionar presente</button>
           </div>
+
+          <div class="grid two gift-meta">
+            <label>Título<input name="presentesTitulo" type="text" placeholder="Sugestões de presentes" /></label>
+            <label>Observação<input name="presentesObservacao" type="text" placeholder="Ex.: Escolha o que preferir 💛" /></label>
+          </div>
+
+          <div class="gift-editor" id="giftEditor" aria-live="polite"></div>
+          <p class="muted empty-gifts" id="emptyGifts">Nenhum presente cadastrado. Clique em “Adicionar presente”.</p>
         </section>
 
         <section class="card">
           <h2>Imagens de fundo</h2>
-          <p class="muted section-copy">Por padrão continuam sendo exatamente <code>assets/convite/page_1.jpeg</code>, <code>assets/convite/page_2.jpeg</code> e <code>assets/convite/page_3.jpeg</code>. Aqui você só troca o arquivo/URL se quiser futuramente.</p>
+          <p class="muted section-copy">As três imagens originais continuam intactas. Estes campos apenas permitem trocar o caminho/URL futuramente.</p>
           <div class="grid image-grid">
             <label>Imagem da capa<input name="imagemCapa" type="text" /><img class="preview" id="previewImagemCapa" alt="Prévia da capa" /></label>
             <label>Imagem dos detalhes<input name="imagemDetalhes" type="text" /><img class="preview" id="previewImagemDetalhes" alt="Prévia dos detalhes" /></label>
@@ -111,6 +130,7 @@
   <script src="js/config/app-config.js"></script>
   <script src="js/config/convite-data.js"></script>
   <script src="js/services/data-service.js"></script>
+  <script src="js/services/present-images-service.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
   <script src="js/adapters/firebase-adapter.js"></script>

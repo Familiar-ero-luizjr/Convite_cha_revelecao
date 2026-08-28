@@ -1,0 +1,4 @@
+# Copie para worker/.dev.vars apenas se for testar o Worker localmente.
+# NUNCA faça commit do arquivo .dev.vars real.
+GITHUB_TOKEN=COLE_SEU_FINE_GRAINED_TOKEN_AQUI
+ADMIN_KEY=COLE_A_MESMA_CHAVE_ADMINISTRATIVA_DO_CLOUDFLARE

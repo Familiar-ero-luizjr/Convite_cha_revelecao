@@ -25,18 +25,47 @@
     return normalized;
   }
 
-  function mergeWithDefaults(value) {
+  function normalizeGiftItem(item, index = 0) {
+    const source = item?.imagem?.tipo || item?.media?.source || "none";
+    const value = item?.imagem?.valor || item?.media?.value || "";
+    const validSource = ["none", "repository", "url"].includes(source) ? source : "none";
+
     return {
-      ...defaults(),
-      ...(value && typeof value === "object" ? value : {})
+      id: String(item?.id || `gift-${Date.now()}-${index}`),
+      texto: String(item?.texto || item?.text || ""),
+      imagem: {
+        tipo: validSource,
+        valor: validSource === "none" ? "" : String(value || "")
+      }
     };
+  }
+
+  function normalizeData(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const merged = { ...defaults(), ...source };
+
+    // Migração automática do formato antigo (textarea com uma sugestão por linha).
+    if (!Array.isArray(source.presentes) && source.presentesLista) {
+      merged.presentes = String(source.presentesLista)
+        .split(/\r?\n/)
+        .map(text => text.trim())
+        .filter(Boolean)
+        .map((texto, index) => normalizeGiftItem({ texto }, index));
+    } else {
+      merged.presentes = Array.isArray(source.presentes)
+        ? source.presentes.map(normalizeGiftItem)
+        : [];
+    }
+
+    // Mantém compatibilidade com versões antigas do convite.
+    merged.presentesLista = merged.presentes.map(item => item.texto).filter(Boolean).join("\n");
+    return merged;
   }
 
   adapters.mock = {
     async load() {
       const raw = localStorage.getItem(config().mockStorageKey || "convite-mock-data");
       if (!raw) return {};
-
       try {
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === "object" ? parsed : {};
@@ -62,9 +91,7 @@
     const adapter = adapters[mode];
     if (!adapter) {
       if (mode === "banco") {
-        throw new Error(
-          "Modo banco selecionado, mas o adapter ainda não está disponível. Configure o Firebase e carregue firebase-adapter.js."
-        );
+        throw new Error("Modo banco selecionado, mas o adapter do Firestore não está disponível.");
       }
       throw new Error(`Adapter "${mode}" não registrado.`);
     }
@@ -82,35 +109,32 @@
 
     getMode,
     setMode,
+    normalizeGiftItem,
+
     getAvailableModes() {
-      return VALID_MODES.map(mode => ({
-        mode,
-        available: Boolean(adapters[mode])
-      }));
+      return VALID_MODES.map(mode => ({ mode, available: Boolean(adapters[mode]) }));
     },
+
     isModeAvailable(mode) {
       return Boolean(adapters[normalizeMode(mode)]);
     },
 
     async load() {
       const saved = await getAdapter().load();
-      return mergeWithDefaults(saved);
+      return normalizeData(saved);
     },
 
     async save(value) {
-      const normalized = mergeWithDefaults(value);
+      const normalized = normalizeData(value);
       await getAdapter().save(normalized);
       return normalized;
     },
 
     async reset() {
       const adapter = getAdapter();
-      if (typeof adapter.reset === "function") {
-        await adapter.reset();
-      } else {
-        await adapter.save({});
-      }
-      return mergeWithDefaults({});
+      if (typeof adapter.reset === "function") await adapter.reset();
+      else await adapter.save({});
+      return normalizeData({});
     }
   };
 })();

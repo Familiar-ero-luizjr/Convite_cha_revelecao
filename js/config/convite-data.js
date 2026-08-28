@@ -1,5 +1,4 @@
-// Valores padrão do convite.
-// Eles continuam sendo o fallback caso não exista dado salvo no adapter ativo.
+// Valores padrão do convite. São usados quando o Firestore ainda não tem dados.
 window.CONVITE_DEFAULTS = {
   menina: "Luiza",
   menino: "Enrique",
@@ -19,12 +18,10 @@ window.CONVITE_DEFAULTS = {
   imagemDetalhes: "assets/convite/page_2.jpeg",
   imagemPresentes: "assets/convite/page_3.jpeg",
 
-  // Conteúdo opcional colocado POR CIMA da imagem page_3.jpeg.
-  // Deixe vazio enquanto o texto ainda estiver desenhado na imagem.
+  // Conteúdo dinâmico da terceira página.
   presentesTitulo: "",
-  presentesLista: "",
-  presentesObservacao: ""
+  presentesObservacao: "",
+  presentes: []
 };
 
-// Compatibilidade com o código antigo.
 window.CONVITE = window.CONVITE_DEFAULTS;

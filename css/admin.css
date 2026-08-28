@@ -95,3 +95,68 @@ code { border-radius: 6px; padding: 2px 6px; background: #f1e5db; font-size: .9e
   .mode-card .notice, .wide { grid-column: auto; }
   .form-actions { bottom: 8px; }
 }
+
+/* Editor dinâmico de presentes */
+.section-heading-row,
+.api-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.section-heading-row h2,
+.api-card h2 { margin-bottom: 8px; }
+.section-heading-row .section-copy { margin-bottom: 0; max-width: 720px; }
+.api-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.gift-meta { margin-bottom: 18px; }
+.gift-editor { display: grid; gap: 14px; }
+.empty-gifts { margin: 12px 0 0; text-align: center; }
+.gift-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(100,74,62,.05);
+}
+.gift-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.gift-order-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.mini-button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+}
+.mini-button:disabled { opacity: .35; cursor: not-allowed; }
+.danger-text { color: var(--danger); }
+.gift-media-grid { margin-top: 14px; align-items: end; }
+.gift-source-panel { margin-top: 14px; }
+.gift-preview-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 94px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: #fffaf5;
+  overflow: hidden;
+}
+.gift-preview { width: 88px; height: 88px; object-fit: contain; }
+.gift-preview-placeholder { color: var(--muted); font-size: .82rem; font-weight: 700; }
+.upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+
+@media (max-width: 760px) {
+  .section-heading-row,
+  .api-card { display: block; }
+  .section-heading-row > .button,
+  .api-actions { margin-top: 14px; }
+  .api-actions { justify-content: flex-start; }
+  .gift-card-head { align-items: flex-start; }
+}

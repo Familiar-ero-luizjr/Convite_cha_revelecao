@@ -1,75 +1,162 @@
-# Convite Chá Revelação — v2
+# Convite Chá Revelação — Firestore + Cloudflare Worker + GitHub Pages
 
-Reorganização do projeto original em uma estrutura de pastas (assets, css, js/config,
-js/services, js/adapters, js/pages) mantendo exatamente o mesmo comportamento.
+Versão atualizada mantendo as três artes originais do convite como fundo e sem alterar `css/convite.css`.
 
-Princípio desta versão:
-- NÃO recria as três páginas do convite.
-- NÃO altera o layout original do convite.
-- NÃO remove nem substitui `page_1.jpeg`, `page_2.jpeg` ou `page_3.jpeg` (agora em `assets/convite/`).
-- As imagens continuam sendo o fundo original das telas.
-- Apenas são adicionados campos dinâmicos, um painel administrativo e CSS separado para os elementos novos.
+## Arquitetura
 
-## Modos de dados
+- **GitHub Pages**: hospeda o convite.
+- **Firestore**: guarda nomes, data, horário, links e lista de presentes.
+- **Cloudflare Worker**: faz upload de imagens por commit na pasta `assets/presentes/`.
+- **Firebase Storage**: não é usado.
+- **Mock**: continua disponível via `localStorage` para testes.
 
-1. **mock**
-   - funciona agora, sem Firebase;
-   - salva em localStorage;
-   - permite testar e editar no próprio computador/navegador.
+## O que foi atualizado
 
-2. **banco**
-   - preparado para Firestore;
-   - usa o mesmo `InviteDataService`;
-   - depois basta preencher `APP_CONFIG.firebase` (em `js/config/app-config.js`), carregar os SDKs compat e o `js/adapters/firebase-adapter.js` passa a registrar o modo banco.
+- modo padrão de produção agora é `banco` (Firestore);
+- painel administrativo usa a `ADMIN_KEY` do Cloudflare Worker;
+- presentes são itens dinâmicos, não mais um textarea único;
+- cada presente pode ter:
+  - sem imagem;
+  - imagem já existente no repositório;
+  - URL externa;
+  - upload de nova imagem, com commit automático no GitHub;
+- itens podem ser adicionados, removidos e reordenados;
+- o seletor de imagens é alimentado por `GET /present-images`;
+- os três placeholders PNG vazios foram removidos;
+- regras do Firestore foram limitadas a `convites/principal`;
+- código do Cloudflare Worker foi incluído em `worker/`;
+- `.env` e `.env.example` foram incluídos para referência/configuração local.
 
-O modo pode ser trocado dentro do próprio painel administrativo.
+## Importante sobre `.env`
 
-## Terceira imagem / presentes
+O arquivo `.env` está no `.gitignore` e não deve ser commitado.
 
-`assets/convite/page_3.jpeg` continua intacta.
-Foi adicionada uma camada por cima dela com:
-- `presentesTitulo`
-- `presentesLista`
-- `presentesObservacao`
+Como o convite é um site estático no GitHub Pages, o navegador **não lê `.env` diretamente**. A URL pública do Worker e a configuração Web do Firebase ficam em `js/config/app-config.js`. Isso é normal: a configuração Web do Firebase não é um segredo.
 
-Os campos começam vazios para não duplicar o texto que ainda estiver desenhado na imagem.
-Quando a imagem for limpa, basta preencher esses campos no painel.
+`GITHUB_TOKEN` e `ADMIN_KEY` nunca devem ser colocados em `app-config.js`.
 
-## Imagens
+O `GITHUB_TOKEN` deve existir somente como Secret do Cloudflare Worker. A `ADMIN_KEY` também fica como Secret no Worker e é digitada no painel administrativo; ela é guardada apenas em `sessionStorage` durante a sessão.
 
-Os valores padrão continuam:
-- `assets/convite/page_1.jpeg`
-- `assets/convite/page_2.jpeg`
-- `assets/convite/page_3.jpeg`
+## Cloudflare Worker
 
-O painel apenas permite trocar esses caminhos/URLs futuramente.
-A pasta `assets/presentes/` está reservada para ícones de sugestões de presentes.
+Worker atual:
 
-## Senha temporária
+`https://convite-cha-revelacao-api.luizjunior-lopes.workers.dev`
 
+No painel do Cloudflare configure:
+
+### Secrets
+
+- `GITHUB_TOKEN`
+- `ADMIN_KEY`
+
+### Variáveis normais
+
+- `GITHUB_OWNER = Familiar-ero-luizjr`
+- `GITHUB_REPO = Convite_cha_revelecao`
+- `GITHUB_BRANCH = main`
+
+Depois substitua o código do Worker pelo arquivo:
+
+`worker/src/index.js`
+
+A versão nova adiciona `POST /admin/verify` e ignora arquivos de imagem com 0 bytes na listagem.
+
+## Firestore
+
+Projeto configurado:
+
+`convite-cha-revelacao-la`
+
+Documento usado:
+
+`convites/principal`
+
+Após atualizar o projeto, publique as regras:
+
+```powershell
+firebase deploy --only firestore:rules
 ```
-troque-esta-senha
+
+As regras atuais permitem leitura e escrita somente em `convites/principal`. Como não há Firebase Authentication neste projeto, esse documento continua publicamente gravável por quem souber chamar a API do Firestore. Não armazene informações sensíveis nele.
+
+## Testar localmente
+
+Na raiz do projeto:
+
+```powershell
+python -m http.server 5500
 ```
 
-A senha simples em um site estático é apenas uma barreira visual. Para produção com Firestore, use Firebase Authentication e regras do banco.
+Abra:
 
-## Estrutura de pastas
+`http://localhost:5500/`
 
+Painel:
+
+`http://localhost:5500/admin.html`
+
+A senha do painel é a mesma `ADMIN_KEY` que você cadastrou no Cloudflare Worker.
+
+## Modos do painel
+
+- **Mock**: grava somente no navegador atual.
+- **Banco**: grava no Firestore e aparece para os visitantes.
+
+O modo padrão para novos visitantes está configurado como `banco` em `js/config/app-config.js`.
+
+## Publicar no GitHub
+
+Confira antes:
+
+```powershell
+git status
 ```
-Convite_cha_revelecao_v2/
+
+Depois:
+
+```powershell
+git add .
+git commit -m "Integra Firestore, Worker e upload de imagens"
+git push origin main
+```
+
+O `.env` não será incluído porque já está ignorado pelo Git.
+
+## Estrutura principal
+
+```text
+Convite_cha_revelecao/
+├── .env                         # local, ignorado pelo Git
+├── .env.example
+├── .firebaserc
+├── firebase.json
+├── firestore.rules
 ├── index.html
 ├── admin.html
 ├── assets/
-│   ├── convite/       # page_1.jpeg, page_2.jpeg, page_3.jpeg
-│   └── presentes/     # ícones de presentes (reservado)
+│   ├── convite/
+│   │   ├── page_1.jpeg
+│   │   ├── page_2.jpeg
+│   │   └── page_3.jpeg
+│   └── presentes/
 ├── css/
-│   ├── convite.css
+│   ├── convite.css              # original, não alterado
 │   ├── convite-overlays.css
 │   ├── admin.css
 │   └── admin-entry.css
-└── js/
-    ├── config/         # app-config.js, convite-data.js
-    ├── services/       # data-service.js
-    ├── adapters/       # firebase-adapter.js
-    └── pages/          # convite.js, admin.js
+├── js/
+│   ├── adapters/firebase-adapter.js
+│   ├── config/app-config.js
+│   ├── config/convite-data.js
+│   ├── pages/admin.js
+│   ├── pages/convite.js
+│   └── services/
+│       ├── data-service.js
+│       └── present-images-service.js
+└── worker/
+    ├── src/index.js
+    ├── wrangler.toml
+    ├── .dev.vars.example
+    └── README.md
 ```

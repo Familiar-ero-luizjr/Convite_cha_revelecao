@@ -1,0 +1,8 @@
+name = "convite-cha-revelacao-api"
+main = "src/index.js"
+compatibility_date = "2026-08-28"
+
+[vars]
+GITHUB_OWNER = "Familiar-ero-luizjr"
+GITHUB_REPO = "Convite_cha_revelecao"
+GITHUB_BRANCH = "main"

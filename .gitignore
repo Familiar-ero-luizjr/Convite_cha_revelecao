@@ -67,3 +67,9 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Cloudflare Worker local secrets
+worker/.dev.vars
+worker/.env
+worker/.env.*
+!worker/.env.example
