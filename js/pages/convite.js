@@ -1,11 +1,20 @@
-(() => {
-  const data = window.CONVITE;
-  if (!data) throw new Error('Arquivo convite-data.js não foi carregado.');
+(async () => {
+  const fallback = window.CONVITE_DEFAULTS || window.CONVITE;
+  if (!fallback) throw new Error("Arquivo convite-data.js não foi carregado.");
+
+  let data = fallback;
+
+  try {
+    if (window.InviteDataService) {
+      data = await window.InviteDataService.load();
+    }
+  } catch (error) {
+    console.warn("Não foi possível carregar o adapter ativo; usando os valores padrão.", error);
+  }
 
   const screens = [...document.querySelectorAll('.screen')];
   const dots = [...document.querySelectorAll('.dot')];
   const back = document.getElementById('backBtn');
-  const next = document.getElementById('nextBtn');
   let current = 0;
   let locked = false;
 
@@ -17,11 +26,41 @@
   document.getElementById('eventTime').textContent = String(data.horario).replace(/\s+(HORAS?)$/i, '\n$1');
   back.textContent = data.textoVoltar || '← Voltar';
 
+  // Mantém exatamente as três imagens originais como fundo; apenas permite trocar
+  // o src pelo painel quando você quiser.
+  document.querySelector('#screen-0 .art img').src = data.imagemCapa || 'assets/convite/page_1.jpeg';
+  document.querySelector('#screen-1 .art img').src = data.imagemDetalhes || 'assets/convite/page_2.jpeg';
+  document.querySelector('#screen-2 .art img').src = data.imagemPresentes || 'assets/convite/page_3.jpeg';
+
+  const giftContent = document.getElementById('giftEditableContent');
+  const giftParts = [];
+
+  if (data.presentesTitulo) {
+    const title = document.createElement('p');
+    title.className = 'gift-title';
+    title.textContent = data.presentesTitulo;
+    giftParts.push(title);
+  }
+
+  if (data.presentesLista) {
+    const list = document.createElement('p');
+    list.className = 'gift-list';
+    list.textContent = data.presentesLista;
+    giftParts.push(list);
+  }
+
+  if (data.presentesObservacao) {
+    const note = document.createElement('p');
+    note.className = 'gift-note';
+    note.textContent = data.presentesObservacao;
+    giftParts.push(note);
+  }
+
+  giftContent.replaceChildren(...giftParts);
+
   function updateNavigation() {
     dots.forEach((dot, index) => dot.classList.toggle('active', index === current));
     back.classList.toggle('show', current > 0);
-    next.classList.toggle('show', current > 0 && current < screens.length - 1);
-    next.textContent = current === 1 ? (data.textoPresentes || 'Presentes →') : (data.textoProximo || 'Próximo →');
   }
 
   function sparkle(x, y) {
@@ -52,7 +91,7 @@
 
   function openLink(url, label) {
     if (!url) {
-      alert(`Adicione a URL de “${label}” no arquivo convite-data.js.`);
+      alert(`Adicione a URL de “${label}” no painel administrativo.`);
       return;
     }
     window.open(url, '_blank', 'noopener');
@@ -67,7 +106,6 @@
   });
   document.getElementById('listBtn').addEventListener('click', () => openLink(data.sugestoesPresentes, 'Sugestões de presentes'));
   back.addEventListener('click', event => goTo(current - 1, event));
-  next.addEventListener('click', event => goTo(current + 1, event));
 
   document.addEventListener('keydown', event => {
     if (event.key === 'ArrowLeft') goTo(current - 1);

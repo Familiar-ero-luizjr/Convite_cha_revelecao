@@ -1,0 +1,42 @@
+/*
+  Somente elementos NOVOS sobre o convite.
+  O convite.css original não precisa ser alterado.
+*/
+.gift-editable-content {
+  position: absolute;
+  z-index: 2;
+  left: 13%;
+  right: 13%;
+  top: 29%;
+  bottom: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7em;
+  pointer-events: none;
+  text-align: center;
+  color: #76513f;
+}
+
+.gift-editable-content:empty {
+  display: none;
+}
+
+.gift-editable-content .gift-title {
+  margin: 0;
+  font: 700 clamp(20px, 3.5vh, 34px)/1.05 "Segoe Script", "Brush Script MT", cursive;
+}
+
+.gift-editable-content .gift-list {
+  margin: 0;
+  white-space: pre-line;
+  font: 700 clamp(12px, 1.8vh, 17px)/1.45 Arial, sans-serif;
+}
+
+.gift-editable-content .gift-note {
+  margin: 0;
+  max-width: 90%;
+  white-space: pre-line;
+  font: 600 clamp(10px, 1.45vh, 14px)/1.35 Arial, sans-serif;
+}

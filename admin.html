@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Painel administrativo do convite de chá revelação" />
+  <title>Painel administrativo</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="gate card" id="loginGate">
+      <p class="eyebrow">Chá Revelação</p>
+      <h1>Painel administrativo</h1>
+      <p class="muted">Digite a senha simples configurada em <code>app-config.js</code>.</p>
+      <form id="loginForm" class="stack">
+        <label>Senha<input id="adminPassword" type="password" autocomplete="current-password" required /></label>
+        <button class="primary" type="submit">Entrar</button>
+        <p class="message error" id="loginError" role="alert"></p>
+      </form>
+      <a class="text-link" href="index.html">← Voltar para o convite</a>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Chá Revelação</p>
+          <h1>Editar convite</h1>
+        </div>
+        <div class="top-actions">
+          <a class="button secondary" href="index.html" target="_blank" rel="noopener">Ver convite</a>
+          <button class="button ghost" id="logoutBtn" type="button">Sair</button>
+        </div>
+      </header>
+
+      <section class="card mode-card">
+        <div>
+          <h2>Fonte dos dados</h2>
+          <p class="muted">Você pode alternar entre os dois modos sem mudar o restante do convite.</p>
+        </div>
+        <label class="mode-select">
+          Modo ativo
+          <select id="dataModeSelect">
+            <option value="mock">Mock — somente neste navegador</option>
+            <option value="banco">Banco — Firestore</option>
+          </select>
+        </label>
+        <div class="notice" id="modeNotice"></div>
+      </section>
+
+      <form id="inviteForm">
+        <section class="card">
+          <h2>Nomes</h2>
+          <div class="grid two">
+            <label>Nome de menina<input name="menina" type="text" required /></label>
+            <label>Nome de menino<input name="menino" type="text" required /></label>
+            <label>Texto entre os nomes<input name="textoOu" type="text" /></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Data, horário e links</h2>
+          <div class="grid two">
+            <label>Data do evento<input name="data" type="text" placeholder="01 Novembro" /></label>
+            <label>Horário<input name="horario" type="text" placeholder="ÀS 12:30 HORAS" /></label>
+            <label class="wide">Link para confirmar presença<input name="confirmarPresenca" type="url" placeholder="https://wa.me/..." /></label>
+            <label class="wide">Link da localização da festa<input name="localizacaoFesta" type="url" placeholder="https://maps.app.goo.gl/..." /></label>
+            <label class="wide">Link externo da lista de presentes<input name="sugestoesPresentes" type="url" placeholder="https://..." /><small>Se vazio, o botão abre a terceira página do convite.</small></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Sugestões de presentes sobre a terceira imagem</h2>
+          <p class="muted section-copy">Esses textos ficam por cima de <code>assets/convite/page_3.jpeg</code>. Enquanto a arte antiga ainda tiver texto desenhado nela, você pode manter estes campos vazios.</p>
+          <div class="grid">
+            <label>Título<input name="presentesTitulo" type="text" placeholder="Sugestões de presentes" /></label>
+            <label>Lista de presentes<textarea name="presentesLista" rows="7" placeholder="Uma sugestão por linha"></textarea></label>
+            <label>Observação<textarea name="presentesObservacao" rows="3" placeholder="Ex.: Fraldas tamanho M ou G"></textarea></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Imagens de fundo</h2>
+          <p class="muted section-copy">Por padrão continuam sendo exatamente <code>assets/convite/page_1.jpeg</code>, <code>assets/convite/page_2.jpeg</code> e <code>assets/convite/page_3.jpeg</code>. Aqui você só troca o arquivo/URL se quiser futuramente.</p>
+          <div class="grid image-grid">
+            <label>Imagem da capa<input name="imagemCapa" type="text" /><img class="preview" id="previewImagemCapa" alt="Prévia da capa" /></label>
+            <label>Imagem dos detalhes<input name="imagemDetalhes" type="text" /><img class="preview" id="previewImagemDetalhes" alt="Prévia dos detalhes" /></label>
+            <label>Imagem dos presentes<input name="imagemPresentes" type="text" /><img class="preview" id="previewImagemPresentes" alt="Prévia dos presentes" /></label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Textos auxiliares</h2>
+          <div class="grid two">
+            <label>Texto para abrir<input name="textoAbrir" type="text" /></label>
+            <label>Texto do botão voltar<input name="textoVoltar" type="text" /></label>
+            <label>Texto do botão próximo<input name="textoProximo" type="text" /></label>
+            <label>Texto do botão presentes<input name="textoPresentes" type="text" /></label>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button class="primary" type="submit">Salvar alterações</button>
+          <button class="danger" id="resetBtn" type="button">Restaurar padrões do modo atual</button>
+          <span class="message" id="saveMessage" role="status"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/config/app-config.js"></script>
+  <script src="js/config/convite-data.js"></script>
+  <script src="js/services/data-service.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+  <script src="js/adapters/firebase-adapter.js"></script>
+  <script src="js/pages/admin.js"></script>
+</body>
+</html>
