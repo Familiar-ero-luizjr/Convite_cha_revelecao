@@ -1,9 +1,10 @@
-CHÁ REVELAÇÃO — NOVO DESIGN + FIREBASE DA V1
+# CHÁ REVELAÇÃO — NOVO DESIGN + FIREBASE DA V1
 
 Entrada: index.html
 Fluxo: index.html -> pagina2.html -> presentes.html / votacao.html
 
-INTEGRAÇÃO:
+## INTEGRAÇÃO
+
 - Firestore da V1 reutilizado
 - conteúdo editável salvo em convites/principal
 - presentes salvos no banco
@@ -13,9 +14,10 @@ INTEGRAÇÃO:
 
 Leia INTEGRACAO_FIREBASE_V1.md antes de publicar.
 
-IMPORTANTE: o pacote NÃO contém o .env da V1 nem tokens privados.
+> IMPORTANTE: o pacote NÃO contém o .env da V1 nem tokens privados.
 
-ANTES DE TESTAR A VOTAÇÃO NO FIRESTORE:
+## ANTES DE TESTAR A VOTAÇÃO NO FIRESTORE
+
 1. confirme que o projeto Firebase da V1 continua ativo;
 2. publique o firestore.rules deste pacote, pois a V1 bloqueava a subcoleção votos;
 3. confirme que o Worker administrativo continua ativo para validar o botão Editar.

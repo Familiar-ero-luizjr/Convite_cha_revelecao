@@ -73,3 +73,5 @@ worker/.dev.vars
 worker/.env
 worker/.env.*
 !worker/.env.example
+worker/.wrangler
+convite-cha-revelacao-la-firebase-adminsdk-fbsvc-532e69d580.json
