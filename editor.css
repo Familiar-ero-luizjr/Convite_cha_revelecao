@@ -31,6 +31,46 @@ body.edit-mode .edit-toggle{
   border-color:#c99373;
 }
 
+/* Atalho discreto e sempre protegido para o painel administrativo. */
+.top-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
+.admin-shortcut{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(112,79,62,.20);
+  border-radius:50%;
+  background:rgba(255,250,244,.90);
+  color:var(--text, #684d40);
+  text-decoration:none;
+  box-shadow:0 8px 24px rgba(70,45,30,.13);
+  backdrop-filter:blur(8px);
+}
+.admin-shortcut svg{width:20px;height:20px;display:block}
+.admin-shortcut:hover{filter:brightness(1.04)}
+.admin-shortcut:focus-visible{
+  outline:4px solid rgba(229,176,144,.34);
+  outline-offset:3px;
+}
+body[data-editor-page="pagina1"] .admin-shortcut,
+body[data-editor-page="pagina2"] .admin-shortcut{
+  position:absolute;
+  top:22px;
+  right:22px;
+  z-index:20;
+}
+body[data-editor-page="pagina1"] .theme-switch,
+body[data-editor-page="pagina2"] .theme-switch{
+  right:76px;
+}
+
 [data-edit-key]{
   transition:outline-color .15s ease, background-color .15s ease;
 }
@@ -138,6 +178,18 @@ body.edit-mode .gift-label{
 }
 
 @media(max-width:600px){
+  body[data-editor-page="pagina1"] .admin-shortcut,
+  body[data-editor-page="pagina2"] .admin-shortcut{
+    top:12px;
+    right:12px;
+    width:42px;
+    min-width:42px;
+    height:42px;
+  }
+  body[data-editor-page="pagina1"] .theme-switch,
+  body[data-editor-page="pagina2"] .theme-switch{
+    right:62px;
+  }
   .edit-toggle{
     right:12px;
     bottom:12px;

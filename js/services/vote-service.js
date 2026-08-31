@@ -24,19 +24,20 @@
   }
 
   async function getExistingVote() {
+    let cached = "";
     try {
-      const cached = localStorage.getItem(LOCAL_VOTE_KEY);
-      if (cached) return cached;
+      cached = localStorage.getItem(LOCAL_VOTE_KEY) || "";
     } catch {}
     try {
       const result = await api(`/votes/${encodeURIComponent(deviceId())}`);
-      if (result.option) {
-        try { localStorage.setItem(LOCAL_VOTE_KEY, result.option); } catch {}
-      }
+      try {
+        if (result.option) localStorage.setItem(LOCAL_VOTE_KEY, result.option);
+        else localStorage.removeItem(LOCAL_VOTE_KEY);
+      } catch {}
       return result.option || "";
     } catch (error) {
       console.warn("Não foi possível consultar o voto.", error);
-      return "";
+      return cached;
     }
   }
 
@@ -64,5 +65,9 @@
     }
   }
 
-  window.InviteVoteService = { getExistingVote, submitVote, getResults, deviceId };
+  function clearLocalVote() {
+    try { localStorage.removeItem(LOCAL_VOTE_KEY); } catch {}
+  }
+
+  window.InviteVoteService = { getExistingVote, submitVote, getResults, clearLocalVote, deviceId };
 })();

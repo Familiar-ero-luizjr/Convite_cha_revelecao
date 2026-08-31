@@ -33,6 +33,7 @@ Opcionalmente configure `ALLOWED_ORIGIN` com a origem exata do GitHub Pages, por
 - `GET|POST /present-images` — lista/envia imagens;
 - `GET /votes/:deviceId` — consulta o voto desse navegador;
 - `POST /votes` — registra um voto por navegador ou troca a opção já registrada, sem duplicar o total;
+- `POST /votes/reset` — inicia uma nova rodada com os totais zerados, protegido por senha;
 - `GET /vote-results` — lê somente o contador agregado.
 
 ## Publicação

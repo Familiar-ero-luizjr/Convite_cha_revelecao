@@ -332,6 +332,26 @@ html[data-theme="night"] .panel{
   font-size:16px;
 }
 
+.vote-reset{
+  min-height:44px;
+  margin:26px auto 0;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(150,72,57,.30);
+  border-radius:999px;
+  padding:0 18px;
+  background:rgba(255,248,244,.94);
+  color:#8c4338;
+  font-weight:700;
+  cursor:pointer;
+}
+.vote-reset:hover{background:#fff1eb}
+.vote-reset:disabled{cursor:wait;opacity:.65}
+.vote-reset:focus-visible{
+  outline:4px solid rgba(180,92,72,.22);
+  outline-offset:3px;
+}
+
 /* ======================================================
    ESTADO PÓS-VOTO
    ====================================================== */
@@ -548,7 +568,7 @@ html.edit-mode [data-editable]{
 }
 </style>
 
-<link href="editor.css?v=20260831" rel="stylesheet"/>
+<link href="editor.css?v=20260831c" rel="stylesheet"/>
 
 <!-- Firebase/Firestore reaproveitados da V1 -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -556,7 +576,7 @@ html.edit-mode [data-editable]{
 <script src="js/config/app-config.js?v=20260831"></script>
 <script src="js/config/convite-data.js?v=20260831"></script>
 <script src="js/services/data-service.js?v=20260831"></script>
-<script src="js/services/admin-api.js?v=20260831"></script>
+<script src="js/services/admin-api.js?v=20260831c"></script>
 <script src="js/services/present-images-service.js?v=20260831"></script>
 <script src="js/adapters/firebase-adapter.js?v=20260831"></script>
 <script src="js/site-data.js?v=20260831"></script>
@@ -573,6 +593,7 @@ html.edit-mode [data-editable]{
   <div class="topbar">
     <a class="back" href="pagina2.html">← Voltar</a>
 
+    <div class="top-actions">
     <button
       class="theme-switch"
       type="button"
@@ -581,6 +602,10 @@ html.edit-mode [data-editable]{
     >
       🌙 Modo noite
     </button>
+    <a class="admin-shortcut" href="admin.html" aria-label="Acessar painel administrativo" title="Painel administrativo">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    </a>
+    </div>
   </div>
 
   <div class="shell">
@@ -693,6 +718,10 @@ html.edit-mode [data-editable]{
             </div>
           </div>
         </section>
+
+        <button class="vote-reset edit-only" id="resetVotes" type="button">
+          ↺ Zerar votação
+        </button>
       </div>
 
     </section>
@@ -708,7 +737,7 @@ html.edit-mode [data-editable]{
 
 
 <script src="editor.js?v=20260831"></script>
-<script src="js/services/vote-service.js?v=20260831"></script>
+<script src="js/services/vote-service.js?v=20260831c"></script>
 <script>
 (async () => {
   await window.InviteApp.load();
@@ -719,6 +748,7 @@ html.edit-mode [data-editable]{
   const status = document.getElementById('voteStatus');
   const afterVote = document.getElementById('afterVote');
   const yourVoteText = document.getElementById('yourVoteText');
+  const resetButton = document.getElementById('resetVotes');
   let selected = '';
   let currentVote = '';
 
@@ -749,11 +779,18 @@ html.edit-mode [data-editable]{
 
   async function showResults() {
     const results = await window.InviteVoteService.getResults();
-    if (!results || results.total <= 0) return;
-    const girlPct = Math.round(results.menina / results.total * 100);
-    const boyPct = 100 - girlPct;
     const placeholder = document.getElementById('resultPlaceholder');
     const live = document.getElementById('resultsLive');
+    if (!results || results.total <= 0) {
+      if (placeholder) {
+        placeholder.style.display = 'block';
+        placeholder.textContent = 'Ainda não há palpites nesta rodada.';
+      }
+      if (live) live.style.display = 'none';
+      return;
+    }
+    const girlPct = Math.round(results.menina / results.total * 100);
+    const boyPct = 100 - girlPct;
     if (placeholder) placeholder.style.display = 'none';
     if (live) live.style.display = 'block';
     document.getElementById('girlPercent').textContent = girlPct + '%';
@@ -788,6 +825,32 @@ html.edit-mode [data-editable]{
     } catch (error) {
       status.textContent = 'Não foi possível registrar o voto. Tente novamente.';
       confirmButton.disabled = false; confirmButton.textContent = currentVote ? 'Alterar voto' : 'Confirmar voto';
+    }
+  });
+
+  resetButton.addEventListener('click', async () => {
+    if (!window.ChaEditor?.isEditing()) return;
+    const confirmed = window.confirm('Zerar toda a votação? Os totais voltarão a zero e todos poderão votar novamente.');
+    if (!confirmed) return;
+    resetButton.disabled = true;
+    resetButton.textContent = 'Zerando…';
+    try {
+      await window.InviteAdminApi.resetVotes();
+      window.InviteVoteService.clearLocalVote();
+      currentVote = '';
+      selected = '';
+      voteButtons.forEach(button => button.setAttribute('aria-pressed', 'false'));
+      confirmButton.disabled = true;
+      confirmButton.textContent = 'Confirmar voto';
+      yourVoteText.textContent = '';
+      afterVote.classList.remove('show');
+      status.textContent = 'Votação zerada. Todos já podem votar novamente.';
+      await showResults();
+    } catch (error) {
+      status.textContent = 'Não foi possível zerar a votação. Tente novamente.';
+    } finally {
+      resetButton.disabled = false;
+      resetButton.textContent = '↺ Zerar votação';
     }
   });
 

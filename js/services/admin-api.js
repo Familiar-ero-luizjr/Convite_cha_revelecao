@@ -50,5 +50,14 @@
     });
   }
 
-  window.InviteAdminApi = { getAdminKey, setAdminKey, verify, saveInvite };
+  async function resetVotes() {
+    const key = getAdminKey();
+    if (!key) throw new Error("Sessão administrativa expirada. Entre novamente.");
+    return request("/votes/reset", {
+      method: "POST",
+      headers: { "X-Admin-Key": key }
+    });
+  }
+
+  window.InviteAdminApi = { getAdminKey, setAdminKey, verify, saveInvite, resetVotes };
 })();

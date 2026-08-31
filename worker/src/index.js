@@ -39,6 +39,11 @@ export default {
         return await submitVote(request, env);
       }
 
+      if (url.pathname === "/votes/reset" && request.method === "POST") {
+        if (!isAuthorized(request, env)) return json({ ok: false, error: "Não autorizado." }, 401, request, env);
+        return await resetVotes(request, env);
+      }
+
       if (url.pathname.startsWith("/votes/") && request.method === "GET") {
         return await getVote(request, env, decodeURIComponent(url.pathname.slice(7)));
       }
@@ -102,38 +107,60 @@ async function submitVote(request, env) {
   // aparelho duas vezes. Em caso de conflito, relê o voto e tenta novamente.
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const existing = await readDocument(auth, `convites/principal/votos/${deviceId}`);
-    const previousOption = existing?.fields?.opcao?.stringValue || "";
+    const results = await readDocument(auth, "convites/principal/estatisticas/votacao");
+    const generation = firestoreInteger(results?.fields?.geracao);
+    const voteGeneration = firestoreInteger(existing?.fields?.geracao);
+    const storedOption = existing?.fields?.opcao?.stringValue || "";
+    const activeExisting = Boolean(existing)
+      && voteGeneration === generation
+      && ["menina", "menino"].includes(storedOption);
+    const previousOption = activeExisting ? storedOption : "";
 
     if (previousOption === option) {
       return json({ ok: true, created: false, changed: false, option }, 200, request, env);
     }
 
     const now = new Date().toISOString();
-    const voteWrite = existing
+    const voteWrite = activeExisting
       ? {
           update: {
             name: voteName,
             fields: {
               opcao: { stringValue: option },
-              atualizadoEm: { timestampValue: now }
+              atualizadoEm: { timestampValue: now },
+              geracao: { integerValue: String(generation) }
             }
           },
-          updateMask: { fieldPaths: ["opcao", "atualizadoEm"] },
+          updateMask: { fieldPaths: ["opcao", "atualizadoEm", "geracao"] },
           currentDocument: { updateTime: existing.updateTime }
         }
+      : existing
+        ? {
+            update: {
+              name: voteName,
+              fields: {
+                opcao: { stringValue: option },
+                criadoEm: { timestampValue: now },
+                atualizadoEm: { timestampValue: now },
+                geracao: { integerValue: String(generation) }
+              }
+            },
+            currentDocument: { updateTime: existing.updateTime }
+          }
       : {
           update: {
             name: voteName,
             fields: {
               opcao: { stringValue: option },
               criadoEm: { timestampValue: now },
-              atualizadoEm: { timestampValue: now }
+              atualizadoEm: { timestampValue: now },
+              geracao: { integerValue: String(generation) }
             }
           },
           currentDocument: { exists: false }
         };
 
-    const counterTransforms = existing
+    const counterTransforms = activeExisting
       ? [
           { fieldPath: previousOption, increment: { integerValue: "-1" } },
           { fieldPath: option, increment: { integerValue: "1" } }
@@ -152,7 +179,8 @@ async function submitVote(request, env) {
             transform: {
               document: resultName,
               fieldTransforms: counterTransforms
-            }
+            },
+            currentDocument: results ? { updateTime: results.updateTime } : { exists: false }
           }
         ]
       })
@@ -161,11 +189,11 @@ async function submitVote(request, env) {
     if (response.ok) {
       return json({
         ok: true,
-        created: !existing,
-        changed: Boolean(existing),
+        created: !activeExisting,
+        changed: activeExisting,
         previousOption,
         option
-      }, existing ? 200 : 201, request, env);
+      }, activeExisting ? 200 : 201, request, env);
     }
 
     const conflict = [409, 412].includes(response.status)
@@ -183,7 +211,13 @@ async function getVote(request, env, rawId) {
   if (!deviceId) return json({ ok: false, error: "Identificador inválido." }, 400, request, env);
   const auth = await firebaseAuth(env);
   const document = await readDocument(auth, `convites/principal/votos/${deviceId}`);
-  return json({ ok: true, option: document?.fields?.opcao?.stringValue || "" }, 200, request, env);
+  const results = await readDocument(auth, "convites/principal/estatisticas/votacao");
+  const currentGeneration = firestoreInteger(results?.fields?.geracao);
+  const voteGeneration = firestoreInteger(document?.fields?.geracao);
+  const option = document && voteGeneration === currentGeneration
+    ? document?.fields?.opcao?.stringValue || ""
+    : "";
+  return json({ ok: true, option }, 200, request, env);
 }
 
 async function getVoteResults(request, env) {
@@ -193,6 +227,48 @@ async function getVoteResults(request, env) {
   const menino = firestoreInteger(document?.fields?.menino);
   const total = firestoreInteger(document?.fields?.total) || menina + menino;
   return json({ ok: true, menina, menino, total }, 200, request, env);
+}
+
+async function resetVotes(request, env) {
+  const auth = await firebaseAuth(env);
+  const resultPath = "convites/principal/estatisticas/votacao";
+  const resultName = documentName(auth.projectId, resultPath);
+  const commitUrl = `https://firestore.googleapis.com/v1/projects/${auth.projectId}/databases/(default)/documents:commit`;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const existing = await readDocument(auth, resultPath);
+    const previousTotal = firestoreInteger(existing?.fields?.total)
+      || firestoreInteger(existing?.fields?.menina) + firestoreInteger(existing?.fields?.menino);
+    const generation = firestoreInteger(existing?.fields?.geracao) + 1;
+    const now = new Date().toISOString();
+    const write = {
+      update: {
+        name: resultName,
+        fields: {
+          menina: { integerValue: "0" },
+          menino: { integerValue: "0" },
+          total: { integerValue: "0" },
+          geracao: { integerValue: String(generation) },
+          reiniciadoEm: { timestampValue: now }
+        }
+      },
+      currentDocument: existing ? { updateTime: existing.updateTime } : { exists: false }
+    };
+    const response = await firestoreFetch(commitUrl, auth, {
+      method: "POST",
+      body: JSON.stringify({ writes: [write] })
+    });
+    const payload = await response.json();
+    if (response.ok) {
+      return json({ ok: true, reset: true, previousTotal, menina: 0, menino: 0, total: 0 }, 200, request, env);
+    }
+
+    const conflict = [409, 412].includes(response.status)
+      || /ALREADY_EXISTS|FAILED_PRECONDITION|ABORTED/.test(JSON.stringify(payload));
+    if (!conflict || attempt === 2) throw new Error(firestoreError(payload, response.status));
+  }
+
+  throw new Error("Não foi possível zerar a votação. Tente novamente.");
 }
 
 function validateDeviceId(value) {
