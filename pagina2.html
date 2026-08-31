@@ -4,6 +4,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta name="description" content="Data, horário, confirmação, localização e presentes do Chá Revelação de Luiza ou Enrique."/>
+<meta name="theme-color" content="#f7e8de"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="pt_BR"/>
+<meta property="og:title" content="Chá Revelação — Luiza ou Enrique"/>
+<meta property="og:description" content="Venha descobrir com a gente quem está chegando!"/>
+<meta property="og:image" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/og.png"/>
+<meta property="og:url" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" type="image/webp" href="assets/07_ursinho_central.webp"/>
 <title>Chá Revelação — Luiza ou Enrique</title>
 <style>
 :root{
@@ -55,12 +65,12 @@ button,a{font:inherit}
 }
 
 .bg-day{
-  background-image:url("assets/fundo_dia.jfif");
+  background-image:url("assets/fundo_dia.webp");
   opacity:1;
 }
 
 .bg-night{
-  background-image:url("assets/fundo_noite.jfif");
+  background-image:url("assets/fundo_noite.webp");
   opacity:0;
 }
 
@@ -335,6 +345,25 @@ html[data-theme="night"] .panel{
   height:310px;
 }
 
+/* Desktop mais compacto: os acessos principais entram mais cedo sem alterar o mobile. */
+@media(min-width:901px){
+  .shell{width:min(900px,94vw);padding:30px 0 82px}
+  .hero-wrap{width:500px;margin-bottom:-80px}
+  .panel{width:760px;padding:108px 42px 48px;border-radius:40px}
+  .names{margin-bottom:16px}
+  .name{font-size:72px}
+  .or{font-size:20px;margin:6px 0 3px}
+  .divider{margin:16px auto 14px}
+  .callout{font-size:40px;margin-bottom:26px}
+  .event-row{width:650px;margin-bottom:32px;grid-template-columns:1fr 112px 1fr}
+  .event-label{min-height:92px}
+  .center-bear{width:126px}
+  .actions{width:680px;gap:14px}
+  .action-media,.vote-icon{width:100px;height:100px}
+  .action-label{font-size:15px}
+  .scenery-space{height:170px}
+}
+
 /* ======================================================
    TABLET
    ====================================================== */
@@ -515,7 +544,7 @@ html[data-theme="night"] .panel{
 <div class="shell">
 <!-- HERO SOBREPOSTO -->
 <div class="hero-wrap">
-<img alt="Ursinho com a frase Qual seu palpite?" class="hero-img" data-image-key="imagens.pagina2.topo" src="assets/01_urso_carro_arco_iris_faixa.png"/>
+<img alt="Ursinho com a frase Qual seu palpite?" class="hero-img" data-image-key="imagens.pagina2.topo" src="assets/01_urso_carro_arco_iris_faixa.webp"/>
 </div>
 <!-- PAINEL CENTRAL -->
 <section aria-label="Informações do chá revelação" class="panel">
@@ -548,20 +577,20 @@ html[data-theme="night"] .panel{
 <span class="small" data-edit-key="unidade-hora">HORAS</span>
 </div>
 </div>
-<img alt="" class="center-bear" data-image-key="imagens.pagina2.ursoCentral" src="assets/07_ursinho_central.png"/>
+<img alt="" class="center-bear" data-image-key="imagens.pagina2.ursoCentral" src="assets/07_ursinho_central.webp"/>
 </div>
 <!-- 4 ACESSOS -->
 <nav aria-label="Acessos do convite" class="actions">
 <a aria-label="Confirmar presença" class="action" data-link-key="confirmarPresenca" href="#">
-<img alt="" class="action-media" data-image-key="imagens.pagina2.confirmar" src="assets/09_icone_confirmar_presenca.png"/>
+<img alt="" class="action-media" data-image-key="imagens.pagina2.confirmar" src="assets/09_icone_confirmar_presenca.webp"/>
 <span class="action-label" data-edit-key="acao-1">Confirmar<br/>presença</span>
 </a>
 <a aria-label="Localização da festa" class="action" data-link-key="localizacaoFesta" href="#">
-<img alt="" class="action-media" data-image-key="imagens.pagina2.localizacao" src="assets/10_icone_localizacao.png"/>
+<img alt="" class="action-media" data-image-key="imagens.pagina2.localizacao" src="assets/10_icone_localizacao.webp"/>
 <span class="action-label" data-edit-key="acao-2">Localização<br/>da festa</span>
 </a>
 <a aria-label="Sugestões de presentes" class="action" href="presentes.html">
-<img alt="" class="action-media" data-image-key="imagens.pagina2.presentes" src="assets/11_icone_sugestoes_presentes.png"/>
+<img alt="" class="action-media" data-image-key="imagens.pagina2.presentes" src="assets/11_icone_sugestoes_presentes.webp"/>
 <span class="action-label" data-edit-key="acao-3">Sugestões de<br/>presentes</span>
 </a>
 <a aria-label="Ir para votação" class="action" href="votacao.html">

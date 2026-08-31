@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Registre seu palpite no Chá Revelação de Luiza ou Enrique.">
+<meta name="theme-color" content="#f7e8de">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Chá Revelação — Luiza ou Enrique">
+<meta property="og:description" content="Venha descobrir com a gente quem está chegando!">
+<meta property="og:image" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/og.png">
+<meta property="og:url" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/webp" href="assets/07_ursinho_central.webp">
 <title>Votação — Chá Revelação</title>
 
 <style>
@@ -59,12 +69,12 @@ button,a{font:inherit}
 }
 
 .bg-day{
-  background-image:url("assets/fundo_dia.jfif");
+  background-image:url("assets/fundo_dia.webp");
   opacity:1;
 }
 
 .bg-night{
-  background-image:url("assets/fundo_noite.jfif");
+  background-image:url("assets/fundo_noite.webp");
   opacity:0;
 }
 
@@ -451,6 +461,19 @@ html.edit-mode [data-editable]{
   height:240px;
 }
 
+/* Desktop mais compacto para revelar as opções de voto com menos rolagem. */
+@media(min-width:901px){
+  .shell{width:min(900px,94vw);padding:26px 0 82px}
+  .hero{width:260px;margin-bottom:-58px}
+  .panel{width:760px;padding:84px 42px 46px;border-radius:40px}
+  .title{font-size:76px}
+  .subtitle{font-size:22px;margin-bottom:26px}
+  .vote-grid{gap:18px}
+  .vote-option{min-height:205px;padding:22px 16px}
+  .vote-symbol{width:92px;height:92px;font-size:45px}
+  .scenery-space{height:150px}
+}
+
 /* ======================================================
    MOBILE
    ====================================================== */
@@ -563,7 +586,7 @@ html.edit-mode [data-editable]{
   <div class="shell">
 
     <div class="hero" aria-hidden="true">
-      <img src="assets/07_ursinho_central.png" data-image-key="imagens.votacao.topo" alt="">
+      <img src="assets/07_ursinho_central.webp" data-image-key="imagens.votacao.topo" alt="">
     </div>
 
     <section class="panel" aria-labelledby="titulo-votacao">

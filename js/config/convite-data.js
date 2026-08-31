@@ -13,37 +13,37 @@ window.CONVITE_DEFAULTS = {
 
   imagens: {
     pagina1: {
-      fundoDia: "assets_p1/fundo_dia.jfif",
-      fundoNoite: "assets_p1/fundo_noite.jfif",
-      topo: "assets_p1/01_ursinhos_na_nuvem.png",
-      baloesEsquerda: "assets_p1/03_baloes_esquerda.png",
-      baloesDireita: "assets_p1/04_baloes_direita.png",
-      envelope: "assets_p1/08_envelope_clique_aqui.png",
-      cliqueAqui: "assets_p1/08.1_clique_aqui.png",
-      blocos: "assets_p1/09_blocos_baby.png",
-      arcoIris: "assets_p1/10_arco_iris_inferior.png"
+      fundoDia: "assets_p1/fundo_dia.webp",
+      fundoNoite: "assets_p1/fundo_noite.webp",
+      topo: "assets_p1/01_ursinhos_na_nuvem.webp",
+      baloesEsquerda: "assets_p1/03_baloes_esquerda.webp",
+      baloesDireita: "assets_p1/04_baloes_direita.webp",
+      envelope: "assets_p1/08_envelope_clique_aqui.webp",
+      cliqueAqui: "assets_p1/08.1_clique_aqui.webp",
+      blocos: "assets_p1/09_blocos_baby.webp",
+      arcoIris: "assets_p1/10_arco_iris_inferior.webp"
     },
     pagina2: {
-      fundoDia: "assets/fundo_dia.jfif",
-      fundoNoite: "assets/fundo_noite.jfif",
-      topo: "assets/01_urso_carro_arco_iris_faixa.png",
-      ursoCentral: "assets/07_ursinho_central.png",
-      confirmar: "assets/09_icone_confirmar_presenca.png",
-      localizacao: "assets/10_icone_localizacao.png",
-      presentes: "assets/11_icone_sugestoes_presentes.png"
+      fundoDia: "assets/fundo_dia.webp",
+      fundoNoite: "assets/fundo_noite.webp",
+      topo: "assets/01_urso_carro_arco_iris_faixa.webp",
+      ursoCentral: "assets/07_ursinho_central.webp",
+      confirmar: "assets/09_icone_confirmar_presenca.webp",
+      localizacao: "assets/10_icone_localizacao.webp",
+      presentes: "assets/11_icone_sugestoes_presentes.webp"
     },
     presentes: {
-      fundoDia: "assets/fundo_dia.jfif",
-      fundoNoite: "assets/fundo_noite.jfif",
-      topo: "assets/p3_topo.png",
-      ursa: "assets/12_ursa_inferior.png",
-      carrinho: "assets/13_carrinho_bebe.png",
-      ursoPresente: "assets/14_urso_com_presente.png"
+      fundoDia: "assets/fundo_dia.webp",
+      fundoNoite: "assets/fundo_noite.webp",
+      topo: "assets/p3_topo.webp",
+      ursa: "assets/12_ursa_inferior.webp",
+      carrinho: "assets/13_carrinho_bebe.webp",
+      ursoPresente: "assets/14_urso_com_presente.webp"
     },
     votacao: {
-      fundoDia: "assets/fundo_dia.jfif",
-      fundoNoite: "assets/fundo_noite.jfif",
-      topo: "assets/07_ursinho_central.png"
+      fundoDia: "assets/fundo_dia.webp",
+      fundoNoite: "assets/fundo_noite.webp",
+      topo: "assets/07_ursinho_central.webp"
     }
   },
 
@@ -83,9 +83,9 @@ window.CONVITE_DEFAULTS = {
   presentesTitulo: "Sugestões de presentes",
   presentesObservacao: "Trouxemos algumas ideias para ajudar na escolha. O mais importante é o carinho. 💛",
   presentes: [
-    { id: "fraldas", texto: "Fraldas — Tamanho PP", imagem: { tipo: "repository", valor: "assets/p3_icone_fraldas.png" } },
-    { id: "mimos", texto: "Gosto de mimos", imagem: { tipo: "repository", valor: "assets/p3_icone_mimos.png" } },
-    { id: "calcado", texto: "Calçado — Tamanho P", imagem: { tipo: "repository", valor: "assets/p3_icone_calcado.png" } }
+    { id: "fraldas", texto: "Fraldas — Tamanho PP", imagem: { tipo: "repository", valor: "assets/p3_icone_fraldas.webp" } },
+    { id: "mimos", texto: "Gosto de mimos", imagem: { tipo: "repository", valor: "assets/p3_icone_mimos.webp" } },
+    { id: "calcado", texto: "Calçado — Tamanho P", imagem: { tipo: "repository", valor: "assets/p3_icone_calcado.webp" } }
   ]
 };
 window.CONVITE = window.CONVITE_DEFAULTS;

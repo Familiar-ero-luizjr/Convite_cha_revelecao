@@ -4,6 +4,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta name="description" content="Você recebeu um convite especial para o Chá Revelação de Luiza ou Enrique."/>
+<meta name="theme-color" content="#f7e8de"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="pt_BR"/>
+<meta property="og:title" content="Chá Revelação — Luiza ou Enrique"/>
+<meta property="og:description" content="Venha descobrir com a gente quem está chegando!"/>
+<meta property="og:image" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/og.png"/>
+<meta property="og:url" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" type="image/webp" href="assets/07_ursinho_central.webp"/>
 <title>Chá Revelação — Convite</title>
 <style>
 :root{
@@ -55,12 +65,12 @@ img{
 }
 
 .bg-day{
-  background-image:url("assets_p1/fundo_dia.jfif");
+  background-image:url("assets_p1/fundo_dia.webp");
   opacity:1;
 }
 
 .bg-night{
-  background-image:url("assets_p1/fundo_noite.jfif");
+  background-image:url("assets_p1/fundo_noite.webp");
   opacity:0;
 }
 
@@ -244,6 +254,19 @@ html[data-theme="night"] .panel{
   height:270px;
 }
 
+/* Desktop: mantém a composição elegante sem transformar o convite em um pôster excessivamente alto. */
+@media(min-width:901px){
+  .shell{width:min(900px,94vw);padding:34px 0 86px}
+  .hero{width:520px;margin-bottom:-82px}
+  .panel{width:740px;padding:112px 44px 46px;border-radius:40px}
+  .cha-revelacao{font-size:38px}
+  .boy-girl{font-size:94px}
+  .invite-text{margin:30px 0 28px;font-size:30px}
+  .envelope-wrap{width:500px}
+  .panel-decor{min-height:112px}
+  .scenery-space{height:160px}
+}
+
 /* TABLET */
 @media(max-width:900px){
   .shell{
@@ -369,9 +392,9 @@ html[data-theme="night"] .panel{
 <div class="shell">
 <!-- TOPO SOBREPOSTO AO PAINEL -->
 <div class="hero">
-<img alt="Dois ursinhos sobre nuvens" class="hero-main" data-image-key="imagens.pagina1.topo" src="assets_p1/01_ursinhos_na_nuvem.png"/>
-<img alt="" class="hero-left" data-image-key="imagens.pagina1.baloesEsquerda" src="assets_p1/03_baloes_esquerda.png"/>
-<img alt="" class="hero-right" data-image-key="imagens.pagina1.baloesDireita" src="assets_p1/04_baloes_direita.png"/>
+<img alt="Dois ursinhos sobre nuvens" class="hero-main" data-image-key="imagens.pagina1.topo" src="assets_p1/01_ursinhos_na_nuvem.webp"/>
+<img alt="" class="hero-left" data-image-key="imagens.pagina1.baloesEsquerda" src="assets_p1/03_baloes_esquerda.webp"/>
+<img alt="" class="hero-right" data-image-key="imagens.pagina1.baloesDireita" src="assets_p1/04_baloes_direita.webp"/>
 </div>
 <!-- PAINEL CENTRAL -->
 <section aria-label="Convite do chá revelação" class="panel">
@@ -383,15 +406,15 @@ html[data-theme="night"] .panel{
       </p>
 <!-- ENVELOPE PRINCIPAL -->
 <div class="envelope-wrap">
-<img alt="Envelope" class="envelope" data-image-key="imagens.pagina1.envelope" src="assets_p1/08_envelope_clique_aqui.png"/>
+<img alt="Envelope" class="envelope" data-image-key="imagens.pagina1.envelope" src="assets_p1/08_envelope_clique_aqui.webp"/>
 <a aria-label="Ir para a Página 2" href="pagina2.html">
-<img alt="Clique aqui" class="heart" data-image-key="imagens.pagina1.cliqueAqui" src="assets_p1/08.1_clique_aqui.png" tabindex="0"/>
+<img alt="Clique aqui" class="heart" data-image-key="imagens.pagina1.cliqueAqui" src="assets_p1/08.1_clique_aqui.webp" tabindex="0"/>
 </a>
 </div>
 <!-- DETALHES DECORATIVOS -->
 <div aria-hidden="true" class="panel-decor">
-<img alt="" class="baby-blocks" data-image-key="imagens.pagina1.blocos" src="assets_p1/09_blocos_baby.png"/>
-<img alt="" class="rainbow" data-image-key="imagens.pagina1.arcoIris" src="assets_p1/10_arco_iris_inferior.png"/>
+<img alt="" class="baby-blocks" data-image-key="imagens.pagina1.blocos" src="assets_p1/09_blocos_baby.webp"/>
+<img alt="" class="rainbow" data-image-key="imagens.pagina1.arcoIris" src="assets_p1/10_arco_iris_inferior.webp"/>
 </div>
 </section>
 <div aria-hidden="true" class="scenery-space"></div>

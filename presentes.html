@@ -4,6 +4,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta name="description" content="Sugestões de presentes para o Chá Revelação de Luiza ou Enrique."/>
+<meta name="theme-color" content="#f7e8de"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="pt_BR"/>
+<meta property="og:title" content="Chá Revelação — Luiza ou Enrique"/>
+<meta property="og:description" content="Venha descobrir com a gente quem está chegando!"/>
+<meta property="og:image" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/og.png"/>
+<meta property="og:url" content="https://familiar-ero-luizjr.github.io/Convite_cha_revelecao/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" type="image/webp" href="assets/07_ursinho_central.webp"/>
 <title>Sugestões de presentes — Chá Revelação</title>
 <style>
 :root{
@@ -37,8 +47,8 @@ img{display:block;max-width:100%;height:auto;user-select:none;-webkit-user-drag:
   background-size:cover;
   transition:opacity .35s ease;
 }
-.bg-day{background-image:url("assets/fundo_dia.jfif");opacity:1}
-.bg-night{background-image:url("assets/fundo_noite.jfif");opacity:0}
+.bg-day{background-image:url("assets/fundo_dia.webp");opacity:1}
+.bg-night{background-image:url("assets/fundo_noite.webp");opacity:0}
 html[data-theme="night"] .bg-day{opacity:0}
 html[data-theme="night"] .bg-night{opacity:1}
 
@@ -243,6 +253,17 @@ html[data-theme="night"] .panel{background:rgba(255,248,240,.94)}
   max-width:215px;
 }
 
+/* Desktop mais enxuto, preservando a mesma hierarquia visual. */
+@media(min-width:901px){
+  .shell{width:min(900px,94vw);padding:26px 0 82px}
+  .hero{width:520px;margin-bottom:-82px}
+  .panel{width:760px;padding:112px 42px 48px;border-radius:40px}
+  .heading{margin-bottom:25px}
+  .title{font-size:72px}
+  .subtitle{font-size:21px}
+  .bottom-overlap{height:220px}
+}
+
 /* tablet */
 @media(max-width:900px){
   .hero{width:73vw;margin-bottom:-82px}
@@ -320,7 +341,7 @@ html[data-theme="night"] .panel{background:rgba(255,248,240,.94)}
 </div>
 <div class="shell">
 <div class="hero">
-<img alt="Sugestões de presentes" data-image-key="imagens.presentes.topo" src="assets/p3_topo.png"/>
+<img alt="Sugestões de presentes" data-image-key="imagens.presentes.topo" src="assets/p3_topo.webp"/>
 </div>
 <section aria-labelledby="titulo-presentes" class="panel">
 
@@ -336,17 +357,17 @@ html[data-theme="night"] .panel{background:rgba(255,248,240,.94)}
 
 <div class="gift-label-list" data-dynamic-list="gifts" id="giftList">
 <div class="gift-label" data-gift-id="fraldas">
-<span class="gift-label-icon"><img alt="" src="assets/p3_icone_fraldas.png"/></span>
+<span class="gift-label-icon"><img alt="" src="assets/p3_icone_fraldas.webp"/></span>
 <span class="gift-label-name" data-edit-key="gift-fraldas">Fraldas — Tamanho PP</span>
 <button aria-label="Remover sugestão" class="gift-remove edit-only" type="button">×</button>
 </div>
 <div class="gift-label" data-gift-id="mimos">
-<span class="gift-label-icon"><img alt="" src="assets/p3_icone_mimos.png"/></span>
+<span class="gift-label-icon"><img alt="" src="assets/p3_icone_mimos.webp"/></span>
 <span class="gift-label-name" data-edit-key="gift-mimos">Gosto de mimos</span>
 <button aria-label="Remover sugestão" class="gift-remove edit-only" type="button">×</button>
 </div>
 <div class="gift-label" data-gift-id="calcado">
-<span class="gift-label-icon"><img alt="" src="assets/p3_icone_calcado.png"/></span>
+<span class="gift-label-icon"><img alt="" src="assets/p3_icone_calcado.webp"/></span>
 <span class="gift-label-name" data-edit-key="gift-calcado">Calçado — Tamanho P</span>
 <button aria-label="Remover sugestão" class="gift-remove edit-only" type="button">×</button>
 </div>
@@ -360,9 +381,9 @@ html[data-theme="night"] .panel{background:rgba(255,248,240,.94)}
 </div>
 </section>
 <div aria-hidden="true" class="bottom-overlap">
-<img alt="" class="bottom-girl" data-image-key="imagens.presentes.ursa" src="assets/12_ursa_inferior.png"/>
-<img alt="" class="bottom-pram" data-image-key="imagens.presentes.carrinho" src="assets/13_carrinho_bebe.png"/>
-<img alt="" class="bottom-gift" data-image-key="imagens.presentes.ursoPresente" src="assets/14_urso_com_presente.png"/>
+<img alt="" class="bottom-girl" data-image-key="imagens.presentes.ursa" src="assets/12_ursa_inferior.webp"/>
+<img alt="" class="bottom-pram" data-image-key="imagens.presentes.carrinho" src="assets/13_carrinho_bebe.webp"/>
+<img alt="" class="bottom-gift" data-image-key="imagens.presentes.ursoPresente" src="assets/14_urso_com_presente.webp"/>
 </div>
 </div>
 </main>

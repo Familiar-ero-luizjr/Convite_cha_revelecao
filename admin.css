@@ -24,7 +24,7 @@ body::before{
   inset:0;
   pointer-events:none;
   opacity:.45;
-  background-image:url("assets/fundo_dia.jfif");
+  background-image:url("assets/fundo_dia.webp");
   background-size:cover;
   background-position:center bottom;
   mix-blend-mode:soft-light;
