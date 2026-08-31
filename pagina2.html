@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+
+<html data-theme="day" lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Chá Revelação — Luiza ou Enrique</title>
+<style>
+:root{
+  --text:#704f3e;
+  --muted:#a47258;
+  --pink:#e87887;
+  --blue:#4f9ad5;
+  --peach:#e6b08f;
+  --peach-border:#cf9270;
+  --panel:rgba(255,250,244,.92);
+  --panel-border:rgba(180,128,91,.55);
+  --shadow:0 28px 70px rgba(80,50,30,.18);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  background:#d8edf8;
+}
+
+button,a{font:inherit}
+
+.page{
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* ======================================================
+   FUNDO DA PÁGINA
+   ====================================================== */
+
+.background{
+  position:absolute;
+  inset:0;
+  z-index:-3;
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:cover;
+  transition:opacity .35s ease;
+}
+
+.bg-day{
+  background-image:url("assets/fundo_dia.jfif");
+  opacity:1;
+}
+
+.bg-night{
+  background-image:url("assets/fundo_noite.jfif");
+  opacity:0;
+}
+
+html[data-theme="night"] .bg-day{opacity:0}
+html[data-theme="night"] .bg-night{opacity:1}
+
+/* leve camada para melhorar leitura do painel sem apagar o cenário */
+.atmosphere{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.02) 44%,rgba(255,245,234,.12));
+  pointer-events:none;
+}
+
+html[data-theme="night"] .atmosphere{
+  background:
+    linear-gradient(180deg,rgba(8,12,18,.16),rgba(8,12,18,.02) 48%,rgba(24,18,24,.10));
+}
+
+/* ======================================================
+   CONTROLE DIA / NOITE
+   ====================================================== */
+
+.theme-switch{
+  position:absolute;
+  top:22px;
+  right:22px;
+  z-index:20;
+  border:1px solid rgba(112,79,62,.2);
+  background:rgba(255,250,244,.88);
+  color:var(--text);
+  border-radius:999px;
+  padding:10px 16px;
+  min-height:44px;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(70,45,30,.13);
+  backdrop-filter:blur(8px);
+}
+
+.theme-switch:focus-visible{
+  outline:4px solid rgba(230,176,143,.35);
+  outline-offset:3px;
+}
+
+/* ======================================================
+   COMPOSIÇÃO PRINCIPAL
+   ====================================================== */
+
+.shell{
+  width:min(1120px,94vw);
+  margin:0 auto;
+  padding:52px 0 130px;
+  position:relative;
+}
+
+/*
+  O herói invade visualmente o painel, como no original.
+*/
+.hero-wrap{
+  width:min(650px,63vw);
+  margin:0 auto -108px;
+  position:relative;
+  z-index:6;
+}
+
+.hero-img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+/* ======================================================
+   PAINEL CENTRAL ÚNICO
+   ====================================================== */
+
+.panel{
+  width:min(860px,82vw);
+  margin:0 auto;
+  padding:145px 52px 62px;
+  position:relative;
+  z-index:4;
+  text-align:center;
+  border:2px solid var(--panel-border);
+  border-radius:46px;
+  background:var(--panel);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(5px);
+}
+
+html[data-theme="night"] .panel{
+  background:rgba(255,248,240,.93);
+}
+
+/* Nomes */
+.names{
+  margin:0 0 24px;
+}
+
+.name{
+  display:block;
+  font-family:"Brush Script MT","Segoe Script","Lucida Handwriting",cursive;
+  font-size:clamp(64px,7vw,102px);
+  line-height:.9;
+  font-weight:400;
+}
+
+.name-girl{color:var(--pink)}
+.name-boy{color:var(--blue)}
+
+.or{
+  display:block;
+  margin:10px 0 6px;
+  color:var(--text);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,2vw,30px);
+}
+
+.divider{
+  width:min(310px,54%);
+  margin:24px auto 18px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  color:#bf754b;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  flex:1;
+  height:2px;
+  background:#bf754b;
+}
+
+.divider span{
+  font-size:20px;
+}
+
+/* Chamada */
+.callout{
+  margin:0 0 34px;
+  color:#a45f3e;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(32px,3.8vw,54px);
+  line-height:1.08;
+  font-weight:400;
+}
+
+/* Data + Urso + Horário */
+.event-row{
+  width:min(690px,94%);
+  margin:0 auto 44px;
+  display:grid;
+  grid-template-columns:1fr 138px 1fr;
+  align-items:center;
+  position:relative;
+}
+
+.event-label{
+  min-height:112px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f4ddd0;
+  border:2px solid var(--peach-border);
+  color:#9a4f2d;
+  text-transform:uppercase;
+  font-weight:700;
+  line-height:1.05;
+}
+
+.event-label.left{
+  border-radius:34px 0 0 34px;
+  padding-right:44px;
+}
+
+.event-label.right{
+  border-radius:0 34px 34px 0;
+  padding-left:44px;
+}
+
+.event-label .big{
+  display:block;
+  font-size:clamp(21px,2.2vw,31px);
+}
+
+.event-label .small{
+  display:block;
+  margin-top:4px;
+  font-size:clamp(11px,1.3vw,16px);
+}
+
+.center-bear{
+  position:absolute;
+  left:50%;
+  bottom:-4px;
+  z-index:5;
+  width:150px;
+  transform:translateX(-50%);
+}
+
+/* Ações */
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:20px;
+  width:min(790px,100%);
+  margin:0 auto;
+}
+
+.action{
+  min-width:0;
+  text-decoration:none;
+  color:#874a2e;
+  text-align:center;
+}
+
+.action-media,
+.vote-icon{
+  width:132px;
+  height:132px;
+  margin:0 auto 10px;
+}
+
+.action-media{
+  object-fit:contain;
+}
+
+.vote-icon{
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e5b090;
+}
+
+.vote-icon svg{
+  width:68%;
+  height:68%;
+}
+
+.action-label{
+  display:block;
+  font-size:16px;
+  font-weight:700;
+  line-height:1.05;
+}
+
+.action:focus-visible{
+  outline:4px solid rgba(196,120,78,.22);
+  outline-offset:5px;
+  border-radius:18px;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .action{
+    transition:transform .18s ease;
+  }
+  .action:hover{
+    transform:translateY(-3px);
+  }
+}
+
+/* ======================================================
+   DECORAÇÃO INFERIOR
+   O próprio fundo já tem os personagens de baixo.
+   Mantemos apenas espaço para mostrar o cenário.
+   ====================================================== */
+
+.scenery-space{
+  height:310px;
+}
+
+/* ======================================================
+   TABLET
+   ====================================================== */
+
+@media(max-width:900px){
+  .shell{
+    width:96vw;
+    padding-top:42px;
+  }
+
+  .hero-wrap{
+    width:72vw;
+    margin-bottom:-88px;
+  }
+
+  .panel{
+    width:90vw;
+    padding:125px 34px 52px;
+  }
+
+  .event-row{
+    width:92%;
+  }
+
+  .actions{
+    gap:14px;
+  }
+
+  .action-media,
+  .vote-icon{
+    width:112px;
+    height:112px;
+  }
+
+  .scenery-space{
+    height:240px;
+  }
+}
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media(max-width:600px){
+  .background{
+    background-position:center top;
+    background-size:auto 100%;
+  }
+
+  .theme-switch{
+    top:12px;
+    right:12px;
+    padding:8px 12px;
+    min-height:42px;
+  }
+
+  .shell{
+    width:100%;
+    padding:48px 0 70px;
+  }
+
+  .hero-wrap{
+    width:88vw;
+    max-width:520px;
+    margin-bottom:-58px;
+  }
+
+  .panel{
+    width:94vw;
+    padding:85px 16px 38px;
+    border-radius:30px;
+  }
+
+  .name{
+    font-size:clamp(54px,17vw,78px);
+  }
+
+  .or{
+    font-size:18px;
+  }
+
+  .callout{
+    font-size:clamp(30px,9vw,43px);
+  }
+
+  .event-row{
+    width:100%;
+    grid-template-columns:1fr 82px 1fr;
+    margin-bottom:34px;
+  }
+
+  .event-label{
+    min-height:92px;
+  }
+
+  .event-label.left{
+    border-radius:24px 0 0 24px;
+    padding-right:25px;
+  }
+
+  .event-label.right{
+    border-radius:0 24px 24px 0;
+    padding-left:25px;
+  }
+
+  .event-label .big{
+    font-size:clamp(17px,5vw,22px);
+  }
+
+  .event-label .small{
+    font-size:clamp(9px,2.9vw,12px);
+  }
+
+  .center-bear{
+    width:100px;
+  }
+
+  .actions{
+    width:min(420px,100%);
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:22px 12px;
+  }
+
+  .action-media,
+  .vote-icon{
+    width:min(27vw,112px);
+    height:min(27vw,112px);
+  }
+
+  .action-label{
+    font-size:clamp(13px,3.8vw,16px);
+  }
+
+  .scenery-space{
+    height:170px;
+  }
+}
+
+@media(max-width:380px){
+  .panel{
+    width:96vw;
+  }
+
+  .hero-wrap{
+    width:92vw;
+  }
+
+  .event-row{
+    grid-template-columns:1fr 72px 1fr;
+  }
+
+  .center-bear{
+    width:90px;
+  }
+}
+</style>
+<link href="editor.css" rel="stylesheet"/>
+<!-- Firebase/Firestore reaproveitados da V1 -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config/app-config.js"></script>
+<script src="js/config/convite-data.js"></script>
+<script src="js/services/data-service.js"></script>
+<script src="js/services/admin-api.js"></script>
+<script src="js/services/present-images-service.js"></script>
+<script src="js/adapters/firebase-adapter.js"></script>
+<script src="js/site-data.js"></script>
+<script src="js/admin-auth.js"></script>
+</head>
+<body data-editor-page="pagina2">
+<main class="page">
+<div aria-hidden="true" class="background bg-day" data-bg-key="imagens.pagina2.fundoDia"></div>
+<div aria-hidden="true" class="background bg-night" data-bg-key="imagens.pagina2.fundoNoite"></div>
+<div aria-hidden="true" class="atmosphere"></div>
+<button aria-pressed="false" class="theme-switch" id="themeSwitch" type="button">
+    🌙 Modo noite
+  </button>
+<div class="shell">
+<!-- HERO SOBREPOSTO -->
+<div class="hero-wrap">
+<img alt="Ursinho com a frase Qual seu palpite?" class="hero-img" data-image-key="imagens.pagina2.topo" src="assets/01_urso_carro_arco_iris_faixa.png"/>
+</div>
+<!-- PAINEL CENTRAL -->
+<section aria-label="Informações do chá revelação" class="panel">
+<!-- NOMES EDITÁVEIS -->
+<div class="names">
+<span class="name name-girl" data-edit-key="nome-feminino" id="nome-feminino">Luiza</span>
+<span class="or" data-edit-key="texto-ou">ou</span>
+<span class="name name-boy" data-edit-key="nome-masculino" id="nome-masculino">Enrique</span>
+</div>
+<div aria-hidden="true" class="divider">
+<span>♥</span>
+</div>
+<!-- TEXTO EDITÁVEL -->
+<h1 class="callout" data-edit-key="chamada">
+        Venha descobrir<br/>
+        com a gente!
+      </h1>
+<!-- DATA + URSINHO + HORÁRIO -->
+<div class="event-row">
+<div class="event-label left">
+<div>
+<span class="big" data-edit-key="dia" id="dia-evento">01</span>
+<span class="small" data-edit-key="mes" id="mes-evento">NOVEMBRO</span>
+</div>
+</div>
+<div aria-hidden="true"></div>
+<div class="event-label right">
+<div>
+<span class="big" data-edit-key="hora" id="hora-evento">12:30</span>
+<span class="small" data-edit-key="unidade-hora">HORAS</span>
+</div>
+</div>
+<img alt="" class="center-bear" data-image-key="imagens.pagina2.ursoCentral" src="assets/07_ursinho_central.png"/>
+</div>
+<!-- 4 ACESSOS -->
+<nav aria-label="Acessos do convite" class="actions">
+<a aria-label="Confirmar presença" class="action" data-link-key="confirmarPresenca" href="#">
+<img alt="" class="action-media" data-image-key="imagens.pagina2.confirmar" src="assets/09_icone_confirmar_presenca.png"/>
+<span class="action-label" data-edit-key="acao-1">Confirmar<br/>presença</span>
+</a>
+<a aria-label="Localização da festa" class="action" data-link-key="localizacaoFesta" href="#">
+<img alt="" class="action-media" data-image-key="imagens.pagina2.localizacao" src="assets/10_icone_localizacao.png"/>
+<span class="action-label" data-edit-key="acao-2">Localização<br/>da festa</span>
+</a>
+<a aria-label="Sugestões de presentes" class="action" href="presentes.html">
+<img alt="" class="action-media" data-image-key="imagens.pagina2.presentes" src="assets/11_icone_sugestoes_presentes.png"/>
+<span class="action-label" data-edit-key="acao-3">Sugestões de<br/>presentes</span>
+</a>
+<a aria-label="Ir para votação" class="action" href="votacao.html">
+<span aria-hidden="true" class="vote-icon">
+<svg viewbox="0 0 100 100">
+<path d="M49 70 C42 63 27 53 27 40 C27 31 34 25 42 25 C47 25 51 28 54 33
+                   C57 28 61 25 66 25 C74 25 81 31 81 40 C81 53 66 63 59 70 L54 75 Z" fill="none" stroke="#fff7f2" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+<path d="M20 75 H80 M31 75 V84 H69 V75" fill="none" stroke="#fff7f2" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+</svg>
+</span>
+<span class="action-label" data-edit-key="acao-4">Votação</span>
+</a>
+</nav>
+</section>
+<!-- espaço para deixar o jardim/personagens do fundo visíveis -->
+<div aria-hidden="true" class="scenery-space"></div>
+</div>
+</main>
+<script>
+(() => {
+  const root = document.documentElement;
+  const button = document.getElementById("themeSwitch");
+
+  button.addEventListener("click", () => {
+    const isNight = root.getAttribute("data-theme") === "night";
+    root.setAttribute("data-theme", isNight ? "day" : "night");
+    button.setAttribute("aria-pressed", String(!isNight));
+    button.textContent = isNight ? "🌙 Modo noite" : "☀️ Modo dia";
+  });
+})();
+</script>
+<button aria-label="Ativar modo edição" aria-pressed="false" class="edit-toggle" id="editToggle" type="button">✏️ Editar</button>
+<script>
+(async () => {
+  await window.InviteApp.load();
+})();
+</script>
+<script src="editor.js"></script>
+</body>
+</html>

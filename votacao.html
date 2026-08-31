@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Votação — Chá Revelação</title>
+
+<style>
+:root{
+  --text:#704f3e;
+  --muted:#9f725a;
+  --panel:rgba(255,250,244,.94);
+  --panel-border:rgba(180,128,91,.55);
+  --shadow:0 28px 70px rgba(80,50,30,.18);
+
+  --girl:#df8794;
+  --girl-soft:#f9e2e6;
+  --girl-deep:#b75f6d;
+
+  --boy:#6aa5cf;
+  --boy-soft:#e1eff9;
+  --boy-deep:#3f7fae;
+
+  --accent:#a66c4d;
+  --accent-soft:#f0d4c1;
+  --success:#8b644e;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+
+body{
+  color:var(--text);
+  background:#d8edf8;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,a{font:inherit}
+
+.page{
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* ======================================================
+   CENÁRIO DIA / NOITE
+   ====================================================== */
+
+.background{
+  position:absolute;
+  inset:0;
+  z-index:-3;
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:cover;
+  transition:opacity .35s ease;
+}
+
+.bg-day{
+  background-image:url("assets/fundo_dia.jfif");
+  opacity:1;
+}
+
+.bg-night{
+  background-image:url("assets/fundo_noite.jfif");
+  opacity:0;
+}
+
+html[data-theme="night"] .bg-day{opacity:0}
+html[data-theme="night"] .bg-night{opacity:1}
+
+.atmosphere{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.10),
+    rgba(255,255,255,.02) 48%,
+    rgba(255,245,234,.12)
+  );
+  pointer-events:none;
+}
+
+html[data-theme="night"] .atmosphere{
+  background:linear-gradient(
+    180deg,
+    rgba(8,12,18,.16),
+    rgba(8,12,18,.02) 48%,
+    rgba(24,18,24,.10)
+  );
+}
+
+/* ======================================================
+   BARRA SUPERIOR
+   ====================================================== */
+
+.topbar{
+  width:min(1120px,94vw);
+  margin:0 auto;
+  padding:20px 0 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  position:relative;
+  z-index:30;
+}
+
+.back,
+.theme-switch{
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(112,79,62,.2);
+  border-radius:999px;
+  background:rgba(255,250,244,.91);
+  color:var(--text);
+  padding:10px 16px;
+  text-decoration:none;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(70,45,30,.13);
+  backdrop-filter:blur(8px);
+}
+
+.back:focus-visible,
+.theme-switch:focus-visible,
+.vote-option:focus-visible,
+.confirm-button:focus-visible{
+  outline:4px solid rgba(229,176,144,.34);
+  outline-offset:3px;
+}
+
+/* ======================================================
+   LAYOUT
+   ====================================================== */
+
+.shell{
+  width:min(1120px,94vw);
+  margin:0 auto;
+  padding:36px 0 145px;
+}
+
+/* Ursinho que invade o painel */
+.hero{
+  width:min(340px,34vw);
+  margin:0 auto -70px;
+  position:relative;
+  z-index:7;
+}
+
+.hero img{
+  width:100%;
+  display:block;
+}
+
+.panel{
+  width:min(850px,84vw);
+  margin:0 auto;
+  padding:105px 48px 58px;
+  position:relative;
+  z-index:5;
+  border:2px solid var(--panel-border);
+  border-radius:46px;
+  background:var(--panel);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(6px);
+  text-align:center;
+}
+
+html[data-theme="night"] .panel{
+  background:rgba(255,248,240,.95);
+}
+
+.eyebrow{
+  margin:0 0 8px;
+  color:var(--muted);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,2vw,28px);
+}
+
+.title{
+  margin:0;
+  color:#b76f4b;
+  font-family:"Brush Script MT","Segoe Script","Lucida Handwriting",cursive;
+  font-size:clamp(66px,7vw,102px);
+  line-height:.92;
+  font-weight:400;
+}
+
+.subtitle{
+  width:min(610px,100%);
+  margin:18px auto 34px;
+  color:var(--text);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,2.1vw,29px);
+  line-height:1.38;
+}
+
+/* ======================================================
+   OPÇÕES DE VOTO
+   ====================================================== */
+
+.vote-grid{
+  width:min(660px,100%);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.vote-option{
+  min-height:245px;
+  padding:28px 18px;
+  border:3px solid transparent;
+  border-radius:36px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    filter .18s ease;
+}
+
+.vote-option.girl{
+  background:linear-gradient(180deg,#fff8f9,var(--girl-soft));
+  color:var(--girl-deep);
+}
+
+.vote-option.boy{
+  background:linear-gradient(180deg,#f8fcff,var(--boy-soft));
+  color:var(--boy-deep);
+}
+
+.vote-option[aria-pressed="true"].girl{
+  border-color:var(--girl);
+  box-shadow:0 18px 38px rgba(223,135,148,.24);
+}
+
+.vote-option[aria-pressed="true"].boy{
+  border-color:var(--boy);
+  box-shadow:0 18px 38px rgba(106,165,207,.24);
+}
+
+.vote-option[disabled]{
+  cursor:default;
+}
+
+.vote-symbol{
+  width:112px;
+  height:112px;
+  display:grid;
+  place-items:center;
+  margin-bottom:14px;
+  border-radius:50%;
+  background:rgba(255,255,255,.74);
+  font-size:54px;
+}
+
+.vote-option strong{
+  display:block;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:34px;
+  line-height:1;
+}
+
+.vote-option small{
+  display:block;
+  margin-top:9px;
+  color:var(--text);
+  font-size:15px;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .vote-option:not([disabled]):hover{
+    transform:translateY(-4px);
+  }
+}
+
+/* ======================================================
+   CONFIRMAÇÃO
+   ====================================================== */
+
+.confirm-area{
+  margin-top:30px;
+}
+
+.confirm-button{
+  min-width:230px;
+  min-height:54px;
+  padding:0 28px;
+  border:0;
+  border-radius:999px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  opacity:.42;
+  transition:opacity .18s ease,transform .18s ease;
+}
+
+.confirm-button:not(:disabled){
+  opacity:1;
+}
+
+.confirm-button:disabled{
+  cursor:not-allowed;
+}
+
+.status{
+  min-height:27px;
+  margin:16px 0 0;
+  color:var(--muted);
+  font-size:16px;
+}
+
+/* ======================================================
+   ESTADO PÓS-VOTO
+   ====================================================== */
+
+.after-vote{
+  display:none;
+  width:min(650px,100%);
+  margin:28px auto 0;
+  padding:28px;
+  border:1px solid rgba(166,108,77,.20);
+  border-radius:30px;
+  background:rgba(255,255,255,.70);
+}
+
+.after-vote.show{
+  display:block;
+}
+
+.after-vote h2{
+  margin:0 0 8px;
+  color:var(--success);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:32px;
+  font-weight:400;
+}
+
+.after-vote p{
+  margin:0;
+  font-size:18px;
+  line-height:1.45;
+}
+
+.your-vote{
+  margin-top:14px !important;
+  font-weight:700;
+}
+
+.result-area{
+  margin-top:24px;
+  padding-top:22px;
+  border-top:1px solid rgba(112,79,62,.15);
+  text-align:left;
+}
+
+.result-area h3{
+  margin:0 0 10px;
+  font-size:20px;
+  color:var(--text);
+}
+
+.result-placeholder{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.45;
+}
+
+/* Futuro backend:
+   quando houver totais reais, o JS poderá preencher estas barras. */
+.results-live{
+  display:none;
+}
+
+.result-line{
+  margin-top:14px;
+}
+
+.result-header{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:6px;
+  font-size:15px;
+  font-weight:700;
+}
+
+.bar{
+  height:14px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#eee4dc;
+}
+
+.bar-fill{
+  height:100%;
+  width:0;
+  border-radius:inherit;
+}
+
+.bar-fill.girl{background:var(--girl)}
+.bar-fill.boy{background:var(--boy)}
+
+.total-votes{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* ======================================================
+   MODO EDIÇÃO
+   ====================================================== */
+
+.edit-toggle{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:50;
+  min-height:46px;
+  border:0;
+  border-radius:999px;
+  padding:0 18px;
+  background:#6d4c3d;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 10px 28px rgba(45,30,20,.25);
+}
+
+html.edit-mode [data-editable]{
+  outline:2px dashed rgba(166,108,77,.48);
+  outline-offset:4px;
+  border-radius:6px;
+  cursor:text;
+}
+
+/* cenário inferior */
+.scenery-space{
+  height:240px;
+}
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media(max-width:600px){
+  .background{
+    background-position:center top;
+    background-size:auto 100%;
+  }
+
+  .topbar{
+    width:94vw;
+    padding-top:12px;
+  }
+
+  .back,.theme-switch{
+    padding:8px 12px;
+  }
+
+  .shell{
+    width:100%;
+    padding:30px 0 75px;
+  }
+
+  .hero{
+    width:52vw;
+    max-width:250px;
+    margin-bottom:-45px;
+  }
+
+  .panel{
+    width:94vw;
+    padding:74px 16px 38px;
+    border-radius:30px;
+  }
+
+  .title{
+    font-size:clamp(56px,16vw,82px);
+  }
+
+  .subtitle{
+    font-size:clamp(18px,5.5vw,25px);
+  }
+
+  .vote-grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+  .vote-option{
+    min-height:185px;
+  }
+
+  .vote-symbol{
+    width:88px;
+    height:88px;
+    font-size:43px;
+  }
+
+  .vote-option strong{
+    font-size:30px;
+  }
+
+  .scenery-space{
+    height:140px;
+  }
+
+  .edit-toggle{
+    right:12px;
+    bottom:12px;
+  }
+}
+</style>
+
+<link href="editor.css" rel="stylesheet"/>
+
+<!-- Firebase/Firestore reaproveitados da V1 -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config/app-config.js"></script>
+<script src="js/config/convite-data.js"></script>
+<script src="js/services/data-service.js"></script>
+<script src="js/services/admin-api.js"></script>
+<script src="js/services/present-images-service.js"></script>
+<script src="js/adapters/firebase-adapter.js"></script>
+<script src="js/site-data.js"></script>
+<script src="js/admin-auth.js"></script>
+</head>
+
+<body data-editor-page="votacao">
+<main class="page">
+
+  <div class="background bg-day" data-bg-key="imagens.votacao.fundoDia" aria-hidden="true"></div>
+  <div class="background bg-night" data-bg-key="imagens.votacao.fundoNoite" aria-hidden="true"></div>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <div class="topbar">
+    <a class="back" href="pagina2.html">← Voltar</a>
+
+    <button
+      class="theme-switch"
+      type="button"
+      id="themeSwitch"
+      aria-pressed="false"
+    >
+      🌙 Modo noite
+    </button>
+  </div>
+
+  <div class="shell">
+
+    <div class="hero" aria-hidden="true">
+      <img src="assets/07_ursinho_central.png" data-image-key="imagens.votacao.topo" alt="">
+    </div>
+
+    <section class="panel" aria-labelledby="titulo-votacao">
+
+      <p class="eyebrow" data-edit-key="votacao-eyebrow">Chá Revelação</p>
+
+      <h1
+        class="title"
+        id="titulo-votacao"
+        data-edit-key="votacao-titulo"
+      >
+        Qual é o seu palpite?
+      </h1>
+
+      <p class="subtitle" data-edit-key="votacao-subtitulo">
+        Quem você acha que vem aí? Escolha uma opção e confirme seu voto.
+      </p>
+
+      <div class="vote-grid" role="group" aria-label="Escolha seu palpite">
+
+        <button
+          type="button"
+          class="vote-option girl"
+          data-vote="Menina"
+          aria-pressed="false"
+        >
+          <span class="vote-symbol" aria-hidden="true">🎀</span>
+          <strong data-edit-key="votacao-label-menina">Menina</strong>
+          <small data-edit-key="votacao-ajuda-menina">Meu palpite é menina</small>
+        </button>
+
+        <button
+          type="button"
+          class="vote-option boy"
+          data-vote="Menino"
+          aria-pressed="false"
+        >
+          <span class="vote-symbol" aria-hidden="true">🧸</span>
+          <strong data-edit-key="votacao-label-menino">Menino</strong>
+          <small data-edit-key="votacao-ajuda-menino">Meu palpite é menino</small>
+        </button>
+
+      </div>
+
+      <div class="confirm-area">
+        <button
+          class="confirm-button"
+          id="confirmVote"
+          type="button"
+          disabled
+        >
+          Confirmar voto
+        </button>
+
+        <p class="status" id="voteStatus" aria-live="polite">
+          Escolha uma opção para continuar.
+        </p>
+
+        <section class="after-vote" id="afterVote" aria-live="polite">
+          <h2 data-edit-key="votacao-confirmacao-titulo">
+            Palpite confirmado! 💛
+          </h2>
+
+          <p data-edit-key="votacao-confirmacao-texto">
+            Obrigado por participar da brincadeira.
+          </p>
+
+          <p class="your-vote" id="yourVoteText"></p>
+
+          <div class="result-area">
+            <h3>Resultado da votação</h3>
+
+            <!--
+              Sem backend, não mostramos percentuais inventados.
+              Esta mensagem desaparece quando totais reais forem fornecidos.
+            -->
+            <p class="result-placeholder" id="resultPlaceholder">
+              O resultado geral será exibido aqui quando a votação estiver
+              conectada ao banco de dados.
+            </p>
+
+            <div class="results-live" id="resultsLive">
+              <div class="result-line">
+                <div class="result-header">
+                  <span>Menina</span>
+                  <span id="girlPercent">0%</span>
+                </div>
+                <div class="bar">
+                  <div class="bar-fill girl" id="girlBar"></div>
+                </div>
+              </div>
+
+              <div class="result-line">
+                <div class="result-header">
+                  <span>Menino</span>
+                  <span id="boyPercent">0%</span>
+                </div>
+                <div class="bar">
+                  <div class="bar-fill boy" id="boyBar"></div>
+                </div>
+              </div>
+
+              <p class="total-votes" id="totalVotes"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </section>
+
+    <div class="scenery-space" aria-hidden="true"></div>
+  </div>
+
+  <button class="edit-toggle" type="button" id="editToggle">
+    ✏️ Editar
+  </button>
+
+</main>
+
+
+<script src="editor.js"></script>
+<script src="js/services/vote-service.js"></script>
+<script>
+(async () => {
+  await window.InviteApp.load();
+  const root = document.documentElement;
+  const themeButton = document.getElementById('themeSwitch');
+  const voteButtons = [...document.querySelectorAll('.vote-option')];
+  const confirmButton = document.getElementById('confirmVote');
+  const status = document.getElementById('voteStatus');
+  const afterVote = document.getElementById('afterVote');
+  const yourVoteText = document.getElementById('yourVoteText');
+  let selected = '';
+
+  function setThemeLabel() {
+    const night = root.getAttribute('data-theme') === 'night';
+    themeButton.setAttribute('aria-pressed', String(night));
+    themeButton.textContent = night ? '☀️ Modo dia' : '🌙 Modo noite';
+  }
+  themeButton.addEventListener('click', () => {
+    const night = root.getAttribute('data-theme') === 'night';
+    root.setAttribute('data-theme', night ? 'day' : 'night'); setThemeLabel();
+  });
+
+  function select(value) {
+    selected = value;
+    voteButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vote.toLowerCase() === value)));
+    confirmButton.disabled = false;
+    status.textContent = 'Seu palpite: ' + (value === 'menina' ? 'Menina' : 'Menino') + '.';
+  }
+
+  async function showResults() {
+    const results = await window.InviteVoteService.getResults();
+    if (!results || results.total <= 0) return;
+    const girlPct = Math.round(results.menina / results.total * 100);
+    const boyPct = 100 - girlPct;
+    const placeholder = document.getElementById('resultPlaceholder');
+    const live = document.getElementById('resultsLive');
+    if (placeholder) placeholder.style.display = 'none';
+    if (live) live.style.display = 'block';
+    document.getElementById('girlPercent').textContent = girlPct + '%';
+    document.getElementById('boyPercent').textContent = boyPct + '%';
+    document.getElementById('girlBar').style.width = girlPct + '%';
+    document.getElementById('boyBar').style.width = boyPct + '%';
+    document.getElementById('totalVotes').textContent = results.total + (results.total === 1 ? ' palpite registrado' : ' palpites registrados');
+  }
+
+  function lock(vote) {
+    selected = vote;
+    voteButtons.forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.vote.toLowerCase() === vote)); b.disabled = true; });
+    confirmButton.disabled = true; confirmButton.textContent = 'Voto registrado';
+    status.textContent = '';
+    yourVoteText.textContent = 'Seu palpite: ' + (vote === 'menina' ? 'Menina' : 'Menino') + '.';
+    afterVote.classList.add('show');
+  }
+
+  voteButtons.forEach(button => button.addEventListener('click', () => {
+    if (button.disabled || window.ChaEditor?.isEditing()) return;
+    select(button.dataset.vote.toLowerCase());
+  }));
+
+  confirmButton.addEventListener('click', async () => {
+    if (!selected) return;
+    confirmButton.disabled = true; confirmButton.textContent = 'Registrando…';
+    try {
+      const result = await window.InviteVoteService.submitVote(selected);
+      lock(result.option);
+      await showResults();
+    } catch (error) {
+      status.textContent = 'Não foi possível registrar o voto. Tente novamente.';
+      confirmButton.disabled = false; confirmButton.textContent = 'Confirmar voto';
+    }
+  });
+
+  const existing = await window.InviteVoteService.getExistingVote();
+  if (existing) { lock(existing); await showResults(); }
+  setThemeLabel();
+})();
+</script>
+</body>
+</html>

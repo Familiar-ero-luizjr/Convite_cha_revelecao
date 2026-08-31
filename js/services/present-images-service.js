@@ -17,7 +17,7 @@
   }
 
   function getAdminKey() {
-    return sessionStorage.getItem(keyStorage) || "";
+    return window.InviteAdminApi?.getAdminKey() || sessionStorage.getItem(keyStorage) || "";
   }
 
   function setAdminKey(value) {

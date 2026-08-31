@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /convites/principal {
+      allow read: if true;
+      allow write: if false; // liberar apenas via backend/autenticação administrativa futura
+      match /votos/{voteId} {
+        allow read: if true;
+        allow create: if request.resource.data.opcao in ['menina', 'menino'];
+        allow update, delete: if false;
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

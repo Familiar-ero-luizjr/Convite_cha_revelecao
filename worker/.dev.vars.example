@@ -2,3 +2,4 @@
 # NUNCA faça commit do arquivo .dev.vars real.
 GITHUB_TOKEN=COLE_SEU_FINE_GRAINED_TOKEN_AQUI
 ADMIN_KEY=COLE_A_MESMA_CHAVE_ADMINISTRATIVA_DO_CLOUDFLARE
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"SEU_PROJETO","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...","client_id":"...","token_uri":"https://oauth2.googleapis.com/token"}

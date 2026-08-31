@@ -1,37 +1,51 @@
-# Cloudflare Worker — API de imagens
+# Cloudflare Worker — convite V2
 
-Código do Worker usado pelo painel administrativo para listar e enviar imagens para `assets/presentes/` no GitHub.
+O Worker mantém os segredos fora do HTML e atende três funções:
 
-## Variáveis no Cloudflare
+1. valida a senha do painel administrativo;
+2. grava o convite e registra votos no Firestore;
+3. envia imagens para o repositório do GitHub.
 
-Secrets:
+## Secrets obrigatórios
 
-- `GITHUB_TOKEN`: Fine-grained Personal Access Token com `Contents: Read and write` somente no repositório do convite.
-- `ADMIN_KEY`: senha administrativa usada pelo painel para autorizar uploads.
+Cadastre em **Cloudflare > Workers > convite-cha-revelacao-api > Settings > Variables and Secrets**:
 
-Variáveis normais:
+- `ADMIN_KEY`: senha forte usada em `admin.html`;
+- `GITHUB_TOKEN`: token fine-grained com `Contents: Read and write` somente no repositório do convite;
+- `FIREBASE_SERVICE_ACCOUNT_JSON`: JSON completo de uma conta de serviço do projeto Firebase.
 
-- `GITHUB_OWNER=Familiar-ero-luizjr`
-- `GITHUB_REPO=Convite_cha_revelecao`
-- `GITHUB_BRANCH=main`
+Para obter o JSON: **Firebase Console > Configurações do projeto > Contas de serviço > Gerar nova chave privada**. Cole todo o conteúdo como um único secret e nunca adicione o arquivo JSON ao repositório.
 
-Opcional:
+## Variáveis normais
 
-- `ALLOWED_ORIGIN`: origem permitida para CORS. Se não for configurada, o Worker responde com `*`.
+Revise `wrangler.toml`:
+
+- `GITHUB_OWNER`;
+- `GITHUB_REPO`;
+- `GITHUB_BRANCH`.
+
+Opcionalmente configure `ALLOWED_ORIGIN` com a origem exata do GitHub Pages, por exemplo `https://usuario.github.io`.
 
 ## Rotas
 
-- `GET /` — saúde da API.
-- `POST /admin/verify` — valida `X-Admin-Key`.
-- `GET /present-images` — lista imagens existentes no repositório.
-- `POST /present-images` — recebe `multipart/form-data` com campo `file`, faz commit no GitHub e devolve o caminho.
+- `POST /admin/verify` — valida `X-Admin-Key`;
+- `PUT /invite` — grava os dados do convite, protegido por senha;
+- `GET|POST /present-images` — lista/envia imagens;
+- `GET /votes/:deviceId` — consulta o voto desse navegador;
+- `POST /votes` — registra um voto apenas uma vez;
+- `GET /vote-results` — lê somente o contador agregado.
 
-## Atualizar pelo painel da Cloudflare
+## Publicação
 
-Abra o Worker, clique em **Editar código**, substitua pelo conteúdo de `src/index.js` e implante.
+No diretório `worker`, execute:
 
-## Teste local opcional com Wrangler
+```powershell
+npx wrangler secret put ADMIN_KEY
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler secret put FIREBASE_SERVICE_ACCOUNT_JSON
+npx wrangler deploy
+```
 
-Copie `.dev.vars.example` para `.dev.vars`, preencha os secrets e execute Wrangler no diretório `worker/`.
+Depois publique `firestore.rules` no Firebase. Essas regras deixam a leitura do convite pública, mas bloqueiam qualquer gravação direta do navegador; o Worker usa a conta de serviço e não depende dessas permissões.
 
-Nunca faça commit de `.dev.vars`.
+Para teste local, copie `.dev.vars.example` para `.dev.vars`. Nunca faça commit de `.dev.vars` ou da chave privada.

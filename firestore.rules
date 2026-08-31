@@ -1,14 +1,17 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // O convite público lê e o painel atual grava somente este documento.
-    // Não use este padrão para dados sensíveis.
     match /convites/principal {
-      allow read, write: if true;
+      // O convite pode ser lido no GitHub Pages. Toda gravação passa pelo
+      // Cloudflare Worker usando uma conta de serviço.
+      allow read: if true;
+      allow write: if false;
+
+      match /{subcollection}/{document} {
+        allow read, write: if false;
+      }
     }
 
-    // Todo o restante do banco fica bloqueado.
     match /{document=**} {
       allow read, write: if false;
     }
