@@ -720,6 +720,7 @@ html.edit-mode [data-editable]{
   const afterVote = document.getElementById('afterVote');
   const yourVoteText = document.getElementById('yourVoteText');
   let selected = '';
+  let currentVote = '';
 
   function setThemeLabel() {
     const night = root.getAttribute('data-theme') === 'night';
@@ -734,8 +735,16 @@ html.edit-mode [data-editable]{
   function select(value) {
     selected = value;
     voteButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vote.toLowerCase() === value)));
+    if (currentVote && value === currentVote) {
+      confirmButton.disabled = true;
+      confirmButton.textContent = 'Voto registrado';
+      status.textContent = 'Este já é o seu palpite atual.';
+      return;
+    }
     confirmButton.disabled = false;
-    status.textContent = 'Seu palpite: ' + (value === 'menina' ? 'Menina' : 'Menino') + '.';
+    confirmButton.textContent = currentVote ? 'Alterar voto' : 'Confirmar voto';
+    const label = value === 'menina' ? 'Menina' : 'Menino';
+    status.textContent = currentVote ? `Trocar seu palpite para ${label}?` : `Seu palpite: ${label}.`;
   }
 
   async function showResults() {
@@ -754,35 +763,36 @@ html.edit-mode [data-editable]{
     document.getElementById('totalVotes').textContent = results.total + (results.total === 1 ? ' palpite registrado' : ' palpites registrados');
   }
 
-  function lock(vote) {
+  function showSavedVote(vote, changed = false) {
+    currentVote = vote;
     selected = vote;
-    voteButtons.forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.vote.toLowerCase() === vote)); b.disabled = true; });
+    voteButtons.forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.vote.toLowerCase() === vote)); b.disabled = false; });
     confirmButton.disabled = true; confirmButton.textContent = 'Voto registrado';
-    status.textContent = '';
+    status.textContent = changed ? 'Seu voto foi alterado com sucesso.' : 'Você pode escolher a outra opção para alterar seu voto.';
     yourVoteText.textContent = 'Seu palpite: ' + (vote === 'menina' ? 'Menina' : 'Menino') + '.';
     afterVote.classList.add('show');
   }
 
   voteButtons.forEach(button => button.addEventListener('click', () => {
-    if (button.disabled || window.ChaEditor?.isEditing()) return;
+    if (window.ChaEditor?.isEditing()) return;
     select(button.dataset.vote.toLowerCase());
   }));
 
   confirmButton.addEventListener('click', async () => {
     if (!selected) return;
-    confirmButton.disabled = true; confirmButton.textContent = 'Registrando…';
+    confirmButton.disabled = true; confirmButton.textContent = currentVote ? 'Alterando…' : 'Registrando…';
     try {
       const result = await window.InviteVoteService.submitVote(selected);
-      lock(result.option);
+      showSavedVote(result.option, Boolean(result.changed));
       await showResults();
     } catch (error) {
       status.textContent = 'Não foi possível registrar o voto. Tente novamente.';
-      confirmButton.disabled = false; confirmButton.textContent = 'Confirmar voto';
+      confirmButton.disabled = false; confirmButton.textContent = currentVote ? 'Alterar voto' : 'Confirmar voto';
     }
   });
 
   const existing = await window.InviteVoteService.getExistingVote();
-  if (existing) { lock(existing); await showResults(); }
+  if (existing) { showSavedVote(existing); await showResults(); }
   setThemeLabel();
 })();
 </script>

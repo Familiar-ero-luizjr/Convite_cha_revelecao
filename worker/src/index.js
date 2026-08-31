@@ -96,45 +96,86 @@ async function submitVote(request, env) {
   const auth = await firebaseAuth(env);
   const voteName = documentName(auth.projectId, `convites/principal/votos/${deviceId}`);
   const resultName = documentName(auth.projectId, "convites/principal/estatisticas/votacao");
-  const now = new Date().toISOString();
-  const response = await firestoreFetch(
-    `https://firestore.googleapis.com/v1/projects/${auth.projectId}/databases/(default)/documents:commit`,
-    auth,
-    {
+  const commitUrl = `https://firestore.googleapis.com/v1/projects/${auth.projectId}/databases/(default)/documents:commit`;
+
+  // A precondição de versão impede que dois cliques simultâneos contem o mesmo
+  // aparelho duas vezes. Em caso de conflito, relê o voto e tenta novamente.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const existing = await readDocument(auth, `convites/principal/votos/${deviceId}`);
+    const previousOption = existing?.fields?.opcao?.stringValue || "";
+
+    if (previousOption === option) {
+      return json({ ok: true, created: false, changed: false, option }, 200, request, env);
+    }
+
+    const now = new Date().toISOString();
+    const voteWrite = existing
+      ? {
+          update: {
+            name: voteName,
+            fields: {
+              opcao: { stringValue: option },
+              atualizadoEm: { timestampValue: now }
+            }
+          },
+          updateMask: { fieldPaths: ["opcao", "atualizadoEm"] },
+          currentDocument: { updateTime: existing.updateTime }
+        }
+      : {
+          update: {
+            name: voteName,
+            fields: {
+              opcao: { stringValue: option },
+              criadoEm: { timestampValue: now },
+              atualizadoEm: { timestampValue: now }
+            }
+          },
+          currentDocument: { exists: false }
+        };
+
+    const counterTransforms = existing
+      ? [
+          { fieldPath: previousOption, increment: { integerValue: "-1" } },
+          { fieldPath: option, increment: { integerValue: "1" } }
+        ]
+      : [
+          { fieldPath: option, increment: { integerValue: "1" } },
+          { fieldPath: "total", increment: { integerValue: "1" } }
+        ];
+
+    const response = await firestoreFetch(commitUrl, auth, {
       method: "POST",
       body: JSON.stringify({
         writes: [
-          {
-            update: {
-              name: voteName,
-              fields: {
-                opcao: { stringValue: option },
-                criadoEm: { timestampValue: now }
-              }
-            },
-            currentDocument: { exists: false }
-          },
+          voteWrite,
           {
             transform: {
               document: resultName,
-              fieldTransforms: [
-                { fieldPath: option, increment: { integerValue: "1" } },
-                { fieldPath: "total", increment: { integerValue: "1" } }
-              ]
+              fieldTransforms: counterTransforms
             }
           }
         ]
       })
+    });
+    const payload = await response.json();
+    if (response.ok) {
+      return json({
+        ok: true,
+        created: !existing,
+        changed: Boolean(existing),
+        previousOption,
+        option
+      }, existing ? 200 : 201, request, env);
     }
-  );
-  const payload = await response.json();
-  if (response.ok) return json({ ok: true, created: true, option }, 201, request, env);
 
-  if (JSON.stringify(payload).includes("ALREADY_EXISTS")) {
-    const existing = await readDocument(auth, `convites/principal/votos/${deviceId}`);
-    return json({ ok: true, created: false, option: existing?.fields?.opcao?.stringValue || option }, 200, request, env);
+    const conflict = [409, 412].includes(response.status)
+      || /ALREADY_EXISTS|FAILED_PRECONDITION|ABORTED/.test(JSON.stringify(payload));
+    if (!conflict || attempt === 2) {
+      throw new Error(firestoreError(payload, response.status));
+    }
   }
-  throw new Error(firestoreError(payload, response.status));
+
+  throw new Error("Não foi possível atualizar o voto. Tente novamente.");
 }
 
 async function getVote(request, env, rawId) {
